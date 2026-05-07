@@ -22,6 +22,22 @@ if "cat_gastos_categorias" not in st.session_state:
 if "cat_gastos_itens" not in st.session_state:
     st.session_state["cat_gastos_itens"] = ["Cimento", "Areia", "Brita", "Vergalhão", "Tijolo", "Tinta", "Madeira", "Parafuso", "Diesel"]
 
+if "dict_equipamentos" not in st.session_state:
+    st.session_state["dict_equipamentos"] = {
+        "Betoneira": "Maquinário Pesado", "Retroescavadeira": "Maquinário Pesado",
+        "Andaime": "EPI/EPC", "Compactador": "Maquinário Pesado",
+        "Gerador": "Ferramenta Elétrica", "Caminhão": "Veículo", "Guincho": "Veículo"
+    }
+
+if "dict_gastos" not in st.session_state:
+    st.session_state["dict_gastos"] = {
+        "Cimento": "Material de Construção", "Areia": "Material de Construção",
+        "Brita": "Material de Construção", "Vergalhão": "Material de Construção",
+        "Tijolo": "Material de Construção", "Tinta": "Material de Construção",
+        "Madeira": "Material de Construção", "Parafuso": "Material de Construção",
+        "Diesel": "Combustível"
+    }
+
 if "mostrar_painel" not in st.session_state:
     st.session_state["mostrar_painel"] = False
 
@@ -371,23 +387,23 @@ elif menu_selecionado == "Novo Diário":
                 with col_add2:
                     st.markdown("**🚜 Equipamentos**")
                     novo_eq_nome = st.text_input("Novo Equipamento", key="in_eq_nome")
+                    nova_eq_cat = st.selectbox("Categoria do Equip.", st.session_state["cat_equip_tipo"], key="in_eq_cat")
+                    
                     if st.button("➕ Add Equipamento", key="btn_add_eq_nome"):
-                        if novo_eq_nome and novo_eq_nome not in st.session_state["cat_equip_nomes"]:
-                            st.session_state["cat_equip_nomes"].append(novo_eq_nome)
+                        if novo_eq_nome and novo_eq_nome not in st.session_state["dict_equipamentos"]:
+                            st.session_state["dict_equipamentos"][novo_eq_nome] = nova_eq_cat
+                            st.success(f"{novo_eq_nome} adicionado!")
                             st.rerun()
-                    eq_nome_remover = st.selectbox("Remover Equipamento", st.session_state["cat_equip_nomes"], key="sel_rm_eq_nome")
-                    if st.button("🗑️ Remover Equipamento", key="btn_rm_eq_nome"):
-                        if len(st.session_state["cat_equip_nomes"]) > 1:
-                            st.session_state["cat_equip_nomes"].remove(eq_nome_remover)
-                            st.rerun()
-                        else:
-                            st.error("Mantenha pelo menos uma opção.")
+
                 with col_add3:
                     st.markdown("**💰 Gastos**")
                     novo_gasto_item = st.text_input("Novo Item de Gasto", key="in_gasto_item")
+                    nova_gasto_cat = st.selectbox("Categoria do Gasto", st.session_state["cat_gastos_categorias"], key="in_gasto_cat")
+                    
                     if st.button("➕ Add Item", key="btn_add_gasto_item"):
-                        if novo_gasto_item and novo_gasto_item not in st.session_state["cat_gastos_itens"]:
-                            st.session_state["cat_gastos_itens"].append(novo_gasto_item)
+                        if novo_gasto_item and novo_gasto_item not in st.session_state["dict_gastos"]:
+                            st.session_state["dict_gastos"][novo_gasto_item] = nova_gasto_cat
+                            st.success(f"{novo_gasto_item} adicionado!")
                             st.rerun()
                     gasto_item_remover = st.selectbox("Remover Item", st.session_state["cat_gastos_itens"], key="sel_rm_gasto_item")
                     if st.button("🗑️ Remover Item", key="btn_rm_gasto_item"):
@@ -432,23 +448,23 @@ elif menu_selecionado == "Novo Diário":
                 )
 
                 st.markdown("### 🚜 Equipamentos")
+                opcoes_equip = list(st.session_state["dict_equipamentos"].keys())
                 tabela_equipamentos = st.data_editor(
-                    [{"nome_item": st.session_state["cat_equip_nomes"][0], "tipo": st.session_state["cat_equip_tipo"][0], "quantidade": 1}],
+                    [{"nome_item": opcoes_equip[0], "quantidade": 1}],
                     num_rows="dynamic", hide_index=True, key="ed_equip",
                     column_config={
-                        "nome_item": st.column_config.SelectboxColumn("Equipamento", options=st.session_state["cat_equip_nomes"], required=True),
-                        "tipo": st.column_config.SelectboxColumn("Categoria", options=st.session_state["cat_equip_tipo"], required=True),
+                        "nome_item": st.column_config.SelectboxColumn("Equipamento", options=opcoes_equip, required=True),
                         "quantidade": st.column_config.NumberColumn("Quantidade", min_value=1, required=True),
                     }
                 )
 
                 st.markdown("### 💰 Controle Financeiro (Gastos do Dia)")
+                opcoes_gastos = list(st.session_state["dict_gastos"].keys())
                 tabela_gastos = st.data_editor(
-                    [{"item": st.session_state["cat_gastos_itens"][0], "categoria": st.session_state["cat_gastos_categorias"][0], "valor": 0}],
+                    [{"item": opcoes_gastos[0], "valor": 0}],
                     num_rows="dynamic", hide_index=True, key="ed_gastos",
                     column_config={
-                        "item": st.column_config.SelectboxColumn("Descrição", options=st.session_state["cat_gastos_itens"], required=True),
-                        "categoria": st.column_config.SelectboxColumn("Categoria", options=st.session_state["cat_gastos_categorias"], required=True),
+                        "item": st.column_config.SelectboxColumn("Descrição", options=opcoes_gastos, required=True),
                         "valor": st.column_config.NumberColumn("Valor (R$)", min_value=0.0, step=0.01, format="R$ %.2f", required=True),
                     }
                 )
@@ -467,10 +483,25 @@ elif menu_selecionado == "Novo Diário":
                                     requests.post("http://127.0.0.1:8000/efetivos/", json={**trab, "diario_id": diario_id_gerado})
                             for equip in tabela_equipamentos:
                                 if equip.get("nome_item") and equip.get("quantidade"):
-                                    requests.post("http://127.0.0.1:8000/equipamentos/", json={**equip, "diario_id": diario_id_gerado})
+                                    tipo_automatico = st.session_state["dict_equipamentos"].get(equip["nome_item"], "Outros")
+                                    
+                                    requests.post("http://127.0.0.1:8000/equipamentos/", json={
+                                        "nome_item": equip["nome_item"],
+                                        "tipo": tipo_automatico,
+                                        "quantidade": equip["quantidade"],
+                                        "diario_id": diario_id_gerado
+                                    })
+                                    
                             for gasto in tabela_gastos:
                                 if gasto.get("item") and gasto.get("valor", 0) > 0:
-                                    requests.post("http://127.0.0.1:8000/gastos/", json={**gasto, "diario_id": diario_id_gerado})
+                                    cat_automatica = st.session_state["dict_gastos"].get(gasto["item"], "Outros")
+                                    
+                                    requests.post("http://127.0.0.1:8000/gastos/", json={
+                                        "item": gasto["item"],
+                                        "categoria": cat_automatica,
+                                        "valor": gasto["valor"],
+                                        "diario_id": diario_id_gerado
+                                    })
                             st.success("✨ Diário registrado com sucesso!")
                         else:
                             st.error("Erro ao registrar a capa do diário.")
@@ -496,6 +527,7 @@ elif menu_selecionado == "Configurações":
         "👷 Efetivos (Funções)", "🚜 Equipamentos (Nomes)", "🔧 Equipamentos (Tipos)", "💰 Gastos (Itens)", "📂 Gastos (Categorias)",
     ])
 
+    # FUNÇÃO 1: Para listas simples (Usada no Efetivo)
     def render_config_tab(session_key, label_tabela, label_add, label_rm, key_prefix):
         col_tabela, col_acoes = st.columns([1, 1], gap="large")
         with col_tabela:
@@ -516,19 +548,46 @@ elif menu_selecionado == "Configurações":
                     if len(st.session_state[session_key]) > 1:
                         st.session_state[session_key].remove(item_rm)
                         st.rerun()
-                    else:
-                        st.error("Mantenha pelo menos 1 opção.")
+
+    def render_config_dict(dict_key, cat_options_key, label_tabela, label_add, key_prefix):
+        col_tabela, col_acoes = st.columns([1, 1], gap="large")
+        with col_tabela:
+            st.subheader(label_tabela)
+            dados_view = [{"Item": k, "Categoria": v} for k, v in st.session_state[dict_key].items()]
+            st.dataframe(dados_view, hide_index=True, use_container_width=True)
+        
+        with col_acoes:
+            with st.container(border=True):
+                st.markdown(f"### ➕ {label_add}")
+                novo_nome = st.text_input("Nome", key=f"cfg_n_{key_prefix}")
+                nova_cat = st.selectbox("Categoria", st.session_state[cat_options_key], key=f"cfg_c_{key_prefix}")
+                if st.button(f"Salvar", key=f"cfg_btn_add_{key_prefix}", use_container_width=True):
+                    if novo_nome:
+                        st.session_state[dict_key][novo_nome] = nova_cat
+                        st.rerun()
+            
+            with st.container(border=True):
+                st.markdown(f"### 🗑️ Remover")
+                item_rm = st.selectbox("Selecione", list(st.session_state[dict_key].keys()), key=f"cfg_rm_{key_prefix}")
+                if st.button("Excluir", key=f"cfg_btn_rm_{key_prefix}", use_container_width=True):
+                    if len(st.session_state[dict_key]) > 1:
+                        del st.session_state[dict_key][item_rm]
+                        st.rerun()
 
     with sub_efetivo:
-        render_config_tab("cat_efetivo", "Funções Atuais", "Adicionar Nova Função", "Remover Função", "func")
+        render_config_tab("cat_efetivo", "Funções Atuais", "Adicionar Função", "Remover", "func")
+    
     with sub_equip_nomes:
-        render_config_tab("cat_equip_nomes", "Equipamentos Atuais", "Adicionar Equipamento", "Remover Equipamento", "eq_nome")
+        render_config_dict("dict_equipamentos", "cat_equip_tipo", "Equipamentos", "Novo Equipamento", "eq")
+        
     with sub_equip_tipo:
-        render_config_tab("cat_equip_tipo", "Tipos Atuais", "Adicionar Tipo", "Remover Tipo", "eq_tipo")
+        render_config_tab("cat_equip_tipo", "Tipos de Equipamento", "Novo Tipo", "Remover Tipo", "eq_tipo")
+        
     with sub_gastos_itens:
-        render_config_tab("cat_gastos_itens", "Itens de Gasto Atuais", "Adicionar Item", "Remover Item", "gasto_item")
+        render_config_dict("dict_gastos", "cat_gastos_categorias", "Itens de Gasto", "Novo Item", "gt")
+        
     with sub_gastos_cat:
-        render_config_tab("cat_gastos_categorias", "Categorias de Gasto Atuais", "Adicionar Categoria", "Remover Categoria", "gasto_cat")
+        render_config_tab("cat_gastos_categorias", "Categorias de Gasto", "Nova Categoria", "Remover Categoria", "gt_cat")
 
 # ── ORÇAMENTOS ────────────────────────────────────────────────────────────────
 
