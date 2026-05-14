@@ -118,3 +118,10 @@ class DadosConversao(BaseModel):
     ambiente: str
     data_inicio: date
 
+# ── Analista de IA ──────────────────────────────────────────────────────────────────
+class ChatRequest(BaseModel):
+    mensagem: str
+
+class ChatRequest(BaseModel):
+    mensagem: str
+    historico: list = []

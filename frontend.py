@@ -511,11 +511,46 @@ elif menu_selecionado == "Novo Diário":
             st.info("👆 Selecione uma obra na caixa acima para começar.")
 
 # ── ANALISTA IA ────────────────────────────────────────────────────────────────
-
 elif menu_selecionado == "Analista IA":
-    st.title("🤖 Analista IA (Gemini)")
-    st.write("Aba aguardando integração com a inteligência artificial para análise de relatórios.")
-    st.info("Em breve!")
+    st.markdown("## 🧠 Analista IA")
+    st.markdown("Converse com o sistema sobre o andamento das obras, gastos e uso de equipamentos.")
+
+    if "mensagens_chat" not in st.session_state:
+                st.session_state["mensagens_chat"] = []
+
+    for msg in st.session_state["mensagens_chat"]:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    pergunta = st.chat_input("Ex: Temos alguma obra com status de atraso?")
+
+    if pergunta:
+        st.session_state["mensagens_chat"].append({"role": "user", "content": pergunta})
+        with st.chat_message("user"):
+            st.markdown(pergunta)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Analisando o banco de dados..."):
+                try:
+                    historico_envio = st.session_state["mensagens_chat"][:-1]
+
+                    resposta_api = requests.post(
+                        "http://127.0.0.1:8000/ia/chat",
+                        json={
+                            "mensagem": pergunta,
+                            "historico": historico_envio
+                        }
+                    )
+
+                    if resposta_api.status_code == 200:
+                        texto_resposta = resposta_api.json()["resposta"]
+                        st.markdown(texto_resposta)
+                        st.session_state["mensagens_chat"].append({"role": "assistant", "content": texto_resposta})
+                    else:
+                        st.error("Ops! O Analista IA encontrou um erro no banco de dados.")
+                except Exception as e:
+                    st.error(f"Erro de conexão com o servidor: {e}")
+
 
 # ── CONFIGURAÇÕES ──────────────────────────────────────────────────────────────
 

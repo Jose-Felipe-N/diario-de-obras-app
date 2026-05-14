@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import models
 from database import engine
-from routers import obras, diarios, registros, dashboard, orcamentos
+from routers import obras, diarios, registros, dashboard, orcamentos, ia
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -19,3 +19,4 @@ app.include_router(diarios.router)
 app.include_router(registros.router)
 app.include_router(dashboard.router)
 app.include_router(orcamentos.router)
+app.include_router(ia.router)
