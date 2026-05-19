@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import google.generativeai as genai
 from streamlit_option_menu import option_menu
+import pandas as pd
+import plotly.express as px
 
 st.set_page_config(page_title="Diário de Obras", layout="wide", initial_sidebar_state="expanded")
 
@@ -515,8 +517,24 @@ elif menu_selecionado == "Analista IA":
     st.markdown("## 🧠 Analista IA")
     st.markdown("Converse com o sistema sobre o andamento das obras, gastos e uso de equipamentos.")
 
+    try:
+        res_obras = requests.get("http://127.0.0.1:8000/ia/obras_disponiveis")
+        lista_obras = res_obras.json() if res_obras.status_code == 200 else []
+    except:
+        lista_obras = []
+
+    opcoes_obras = {"🌍 Visão Geral (Todas as Obras)": None}
+    for o in lista_obras:
+        opcoes_obras[f"🏗️ {o['nome']}"] = o["id"]
+
+    st.markdown("### 🎯 Foco da Análise")
+    obra_selecionada_nome = st.selectbox("Escolha a obra para a IA focar:", list(opcoes_obras.keys()))
+    obra_selecionada_id = opcoes_obras[obra_selecionada_nome]
+    
+    st.divider() 
+
     if "mensagens_chat" not in st.session_state:
-                st.session_state["mensagens_chat"] = []
+        st.session_state["mensagens_chat"] = []
 
     for msg in st.session_state["mensagens_chat"]:
         with st.chat_message(msg["role"]):
@@ -538,13 +556,50 @@ elif menu_selecionado == "Analista IA":
                         "http://127.0.0.1:8000/ia/chat",
                         json={
                             "mensagem": pergunta,
-                            "historico": historico_envio
+                            "historico": historico_envio,
+                            "obra_id": obra_selecionada_id  
                         }
                     )
+                    
+                    
+
 
                     if resposta_api.status_code == 200:
-                        texto_resposta = resposta_api.json()["resposta"]
+                        dados_resposta = resposta_api.json()
+                        texto_resposta = dados_resposta.get("resposta", "Erro ao ler a mensagem.")
+                        tem_grafico = dados_resposta.get("gerar_grafico", False)
+                        
                         st.markdown(texto_resposta)
+                        
+                        if tem_grafico and "dados_grafico" in dados_resposta:
+                                st.markdown(f"**📊 {dados_resposta.get('titulo_grafico', 'Gráfico Analítico')}**")
+                                
+                                tipo_grafico = dados_resposta.get("tipo_grafico", "barras").lower()
+                                
+                                df_grafico = pd.DataFrame(
+                                    list(dados_resposta["dados_grafico"].items()),
+                                    columns=["Categoria", "Valor"]
+                                )
+                                
+                                try:
+                                    df_grafico["Categoria_Data"] = pd.to_datetime(df_grafico["Categoria"], format="%d/%m/%Y")
+                                    df_grafico = df_grafico.sort_values(by="Categoria_Data")
+                                    df_grafico = df_grafico.drop(columns=["Categoria_Data"])
+                                except Exception:
+                                    pass
+
+                                if tipo_grafico == "pizza":
+                                    fig = px.pie(df_grafico, values='Valor', names='Categoria', hole=0.3)
+                                    st.plotly_chart(fig, use_container_width=True)
+                                
+                                elif tipo_grafico == "linha":
+                                    fig = px.line(df_grafico, x="Categoria", y="Valor", markers=True)
+                                    st.plotly_chart(fig, use_container_width=True)
+                                
+                                else: # Padrão: gráfico de barras
+                                    fig = px.bar(df_grafico, x="Categoria", y="Valor")
+                                    st.plotly_chart(fig, use_container_width=True)
+                        
                         st.session_state["mensagens_chat"].append({"role": "assistant", "content": texto_resposta})
                     else:
                         st.error("Ops! O Analista IA encontrou um erro no banco de dados.")

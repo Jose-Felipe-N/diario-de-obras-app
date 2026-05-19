@@ -121,7 +121,5 @@ class DadosConversao(BaseModel):
 # ── Analista de IA ──────────────────────────────────────────────────────────────────
 class ChatRequest(BaseModel):
     mensagem: str
-
-class ChatRequest(BaseModel):
-    mensagem: str
     historico: list = []
+    obra_id: Optional[int] = None  # Se for None, a IA analisa todas as obras. Se tiver ID, ela foca em uma só.
