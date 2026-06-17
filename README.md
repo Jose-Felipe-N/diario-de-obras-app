@@ -1,3 +1,6 @@
+> 🇧🇷 Português | [🇺🇸 English](README.en.md)
+
+
 # 🏗️ Diário de Obras
 
 Sistema web para gerenciamento de obras e diários de campo, com painel de controle, controle financeiro e assistente de inteligência artificial focado em construção civil.
