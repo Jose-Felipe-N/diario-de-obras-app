@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import google.generativeai as genai
 from streamlit_option_menu import option_menu
 import pandas as pd
 import plotly.express as px

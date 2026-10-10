@@ -1,0 +1,4 @@
+# Dados de avaliação sempre com final de linha LF, em qualquer sistema.
+# Sem isso, o mesmo JSON teria bytes diferentes no Windows (CRLF) e no Linux (LF).
+*.json text eol=lf
+*.jsonl text eol=lf
