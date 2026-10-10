@@ -8,6 +8,8 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import plotly.express as px
 
+from opcoes_tela import adicionar_opcao, remover_opcao
+
 st.set_page_config(page_title="Diário de Obras", layout="wide", initial_sidebar_state="expanded")
 
 URL_OBRAS = "http://127.0.0.1:8000/obras/"
@@ -27,9 +29,7 @@ catalogo = carregar_catalogo()
 listas_padrao = {
     "cat_efetivo": catalogo["funcoes"],
     "cat_equip_tipo": catalogo["tipos_equipamento"],
-    "cat_equip_nomes": list(catalogo["equipamentos"]),
     "cat_gastos_categorias": catalogo["categorias_gasto"],
-    "cat_gastos_itens": list(catalogo["itens_gasto"]),
     "dict_equipamentos": catalogo["equipamentos"],
     "dict_gastos": catalogo["itens_gasto"],
 }
@@ -444,13 +444,11 @@ elif menu_selecionado == "Novo Diário":
                     st.markdown("**👷 Efetivo**")
                     nova_func = st.text_input("Nova Função", key="in_func")
                     if st.button("➕ Add", key="btn_add_func"):
-                        if nova_func and nova_func not in st.session_state["cat_efetivo"]:
-                            st.session_state["cat_efetivo"].append(nova_func)
+                        if adicionar_opcao(st.session_state["cat_efetivo"], nova_func):
                             st.rerun()
                     func_remover = st.selectbox("Remover Função", st.session_state["cat_efetivo"], key="sel_rm_func")
                     if st.button("🗑️ Remover", key="btn_rm_func"):
-                        if len(st.session_state["cat_efetivo"]) > 1:
-                            st.session_state["cat_efetivo"].remove(func_remover)
+                        if remover_opcao(st.session_state["cat_efetivo"], func_remover):
                             st.rerun()
                         else:
                             st.error("Mantenha pelo menos uma opção.")
@@ -458,27 +456,29 @@ elif menu_selecionado == "Novo Diário":
                     st.markdown("**🚜 Equipamentos**")
                     novo_eq_nome = st.text_input("Novo Equipamento", key="in_eq_nome")
                     nova_eq_cat = st.selectbox("Categoria do Equip.", st.session_state["cat_equip_tipo"], key="in_eq_cat")
-                    
+
                     if st.button("➕ Add Equipamento", key="btn_add_eq_nome"):
-                        if novo_eq_nome and novo_eq_nome not in st.session_state["dict_equipamentos"]:
-                            st.session_state["dict_equipamentos"][novo_eq_nome] = nova_eq_cat
-                            st.success(f"{novo_eq_nome} adicionado!")
+                        if adicionar_opcao(st.session_state["dict_equipamentos"], novo_eq_nome, nova_eq_cat):
                             st.rerun()
+                    equip_remover = st.selectbox("Remover Equipamento", list(st.session_state["dict_equipamentos"]), key="sel_rm_equip")
+                    if st.button("🗑️ Remover Equipamento", key="btn_rm_equip"):
+                        if remover_opcao(st.session_state["dict_equipamentos"], equip_remover):
+                            st.rerun()
+                        else:
+                            st.error("Mantenha pelo menos uma opção.")
 
                 with col_add3:
                     st.markdown("**💰 Gastos**")
                     novo_gasto_item = st.text_input("Novo Item de Gasto", key="in_gasto_item")
                     nova_gasto_cat = st.selectbox("Categoria do Gasto", st.session_state["cat_gastos_categorias"], key="in_gasto_cat")
-                    
+
                     if st.button("➕ Add Item", key="btn_add_gasto_item"):
-                        if novo_gasto_item and novo_gasto_item not in st.session_state["dict_gastos"]:
-                            st.session_state["dict_gastos"][novo_gasto_item] = nova_gasto_cat
-                            st.success(f"{novo_gasto_item} adicionado!")
+                        if adicionar_opcao(st.session_state["dict_gastos"], novo_gasto_item, nova_gasto_cat):
                             st.rerun()
-                    gasto_item_remover = st.selectbox("Remover Item", st.session_state["cat_gastos_itens"], key="sel_rm_gasto_item")
+                    # Remove da mesma lista que alimenta a tabela de gastos do diário.
+                    gasto_item_remover = st.selectbox("Remover Item", list(st.session_state["dict_gastos"]), key="sel_rm_gasto_item")
                     if st.button("🗑️ Remover Item", key="btn_rm_gasto_item"):
-                        if len(st.session_state["cat_gastos_itens"]) > 1:
-                            st.session_state["cat_gastos_itens"].remove(gasto_item_remover)
+                        if remover_opcao(st.session_state["dict_gastos"], gasto_item_remover):
                             st.rerun()
                         else:
                             st.error("Mantenha pelo menos uma opção.")
