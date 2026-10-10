@@ -1,0 +1,294 @@
+{
+  "versao": 1,
+  "descricao": "Eventos marcantes dos dados de avaliação. Espelho legível em eventos.md; alterar os dois juntos.",
+  "referencia": "2026-10-08",
+  "periodos": {
+    "ontem": ["2026-10-07", "2026-10-07"],
+    "essa_semana": ["2026-10-05", "2026-10-08"],
+    "semana_passada": ["2026-09-28", "2026-10-04"],
+    "ultimas_duas_semanas": ["2026-09-24", "2026-10-07"]
+  },
+  "convencoes": {
+    "clima_seco": ["Sol", "Nublado"],
+    "jornada_normal_horas": 8,
+    "jornada_parado_max_horas": 2,
+    "clima_livre": "o clima não interfere (obra fechada) e não é forçado pelo evento"
+  },
+  "obras": [
+    {
+      "nome": "Casa Condomínio",
+      "ambiente": "Aberto",
+      "status": "Em andamento",
+      "etapas": [
+        {"nome": "1. Fundação", "inicio": "2026-08-24", "fim": "2026-09-07"},
+        {"nome": "2. Alvenaria", "inicio": "2026-09-08", "fim": null}
+      ]
+    },
+    {
+      "nome": "Reforma Loja Shopping",
+      "ambiente": "Fechado",
+      "status": "Concluída",
+      "etapas": [
+        {"nome": "1. Demolição", "inicio": "2026-07-10", "fim": "2026-07-19"},
+        {"nome": "2. Revestimento e Pintura", "inicio": "2026-07-20", "fim": "2026-08-29"}
+      ]
+    },
+    {
+      "nome": "Galpão Logístico",
+      "ambiente": "Misto",
+      "status": "Em andamento",
+      "etapas": [
+        {"nome": "1. Terraplanagem", "inicio": "2026-06-10", "fim": "2026-07-10"},
+        {"nome": "Intervalo", "inicio": "2026-07-11", "fim": "2026-07-14"},
+        {"nome": "2. Estrutura Metálica", "inicio": "2026-07-15", "fim": null}
+      ]
+    }
+  ],
+  "restricoes": [
+    {"data": "2026-06-17", "obra": "Galpão Logístico", "tipo": "clima_forcado", "clima": {"algum_periodo": "Tempestade"}, "local": "Exterior", "jornada": "parado", "motivo": "véspera do atolamento (E05)"},
+    {"periodo": ["2026-09-28", "2026-10-04"], "obra": "Galpão Logístico", "tipo": "unico_dia_com_chuva", "data": "2026-10-02", "motivo": "gabarito da Q2"},
+    {"data": "2026-08-29", "obra": "Reforma Loja Shopping", "tipo": "diario_obrigatorio", "jornada": "normal", "motivo": "data de conclusão da obra"},
+    {"data": "2026-10-07", "obra": "Casa Condomínio", "tipo": "sem_diario", "motivo": "furo: ontem sem registro"},
+    {"data": "2026-09-30", "obra": "Galpão Logístico", "tipo": "sem_diario", "motivo": "furo: premissa errada na semana passada"},
+    {"data": "2026-10-08", "obra": "*", "tipo": "sem_diario", "motivo": "hoje ainda não registrado"}
+  ],
+  "eventos": [
+    {
+      "codigo": "E05", "data": "2026-06-18", "obra": "Galpão Logístico", "etapa": "1. Terraplanagem",
+      "clima": {"manha": "Nublado", "tarde": "Nublado"}, "local": "Exterior", "jornada": "reduzida", "horas": 4,
+      "texto": "Retro e caminhão atolaram no barro logo cedo, a manhã toda foi pra desatolar.",
+      "palavras_chave": ["atolaram", "barro", "desatolar"],
+      "pergunta": "teve máquina atolada?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Operador de Máquinas", "Servente"], "equipamentos": ["Retroescavadeira", "Caminhão"],
+                 "gastos": [{"item": "Diesel", "categoria": "Combustível"}]},
+      "notas": "Sem palavra de clima; a véspera (17/06) tem tempestade forçada."
+    },
+    {
+      "codigo": "E06", "data": "2026-06-30", "obra": "Galpão Logístico", "etapa": "1. Terraplanagem",
+      "clima": {"manha": "Sol", "tarde": "Sol"}, "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Vizinho reclamou da poeira. Caminhão ficou molhando a pista de acesso o dia todo.",
+      "palavras_chave": ["vizinho", "poeira", "molhando a pista"],
+      "pergunta": "teve reclamação de vizinho?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Operador de Máquinas", "Servente", "Mestre de Obras"], "equipamentos": ["Retroescavadeira", "Compactador", "Caminhão"],
+                 "gastos": [{"item": "Diesel", "categoria": "Combustível"}, {"item": "Aluguel de rolo compactador", "categoria": "Locação"}]}
+    },
+    {
+      "codigo": "E12", "data": "2026-07-13", "obra": "Galpão Logístico", "etapa": "Intervalo",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Perfis da estrutura ainda não chegaram, ficamos só na organização do canteiro.",
+      "palavras_chave": ["não chegaram", "organização do canteiro"],
+      "pergunta": "algum fornecedor atrasou?", "estrela": "Q5", "par": {"com": "E11", "difere": "obra, material (tijolo × perfis) e etapa (Alvenaria × intervalo)"},
+      "diario": {"efetivo": ["Servente", "Mestre de Obras"], "equipamentos": ["Caminhão"],
+                 "gastos": [{"item": "Marmitex", "categoria": "Alimentação"}]},
+      "notas": "Servente e Mestre de Obras são a equipe normal do intervalo."
+    },
+    {
+      "codigo": "E02", "data": "2026-07-14", "obra": "Reforma Loja Shopping", "etapa": "1. Demolição",
+      "clima": "livre", "local": "Interior", "jornada": "normal", "horas": 8,
+      "texto": "Demolindo a copa antiga rompeu um ponto de água. Manutenção do shopping fechou o registro e consertou.",
+      "palavras_chave": ["ponto de água", "fechou o registro", "manutenção do shopping", "copa"],
+      "pergunta": "teve vazamento na loja?", "estrela": null, "par": {"com": "E01", "difere": "obra, causa (demolição × máquina abrindo vala) e local (Interior × Exterior)"},
+      "diario": {"efetivo": ["Servente", "Pedreiro", "Mestre de Obras"], "equipamentos": ["Caminhão"],
+                 "gastos": [{"item": "Aluguel de caçamba", "categoria": "Locação"}]}
+    },
+    {
+      "codigo": "E16", "data": "2026-07-16", "obra": "Reforma Loja Shopping", "etapa": "1. Demolição",
+      "clima": "livre", "local": "Interior", "jornada": "reduzida", "horas": 4,
+      "texto": "Administração do shopping proibiu barulho até as 14 h, quebradeira só à tarde.",
+      "palavras_chave": ["proibiu barulho", "até as 14 h", "quebradeira"],
+      "pergunta": "por que a demolição rendeu pouco?", "estrela": "Q6", "par": null,
+      "diario": {"efetivo": ["Servente", "Pedreiro"], "equipamentos": ["Caminhão"],
+                 "gastos": [{"item": "Aluguel de caçamba", "categoria": "Locação"}]},
+      "notas": "Jornada reduzida explicada pelo evento, sem clima ruim."
+    },
+    {
+      "codigo": "E17", "data": "2026-08-05", "obra": "Reforma Loja Shopping", "etapa": "2. Revestimento e Pintura",
+      "clima": "livre", "local": "Interior", "jornada": "normal", "horas": 8,
+      "texto": "Cliente mudou a cor da parede do fundo, vai ter que repintar.",
+      "palavras_chave": ["mudou a cor", "repintar"],
+      "pergunta": "o cliente pediu alguma mudança?", "estrela": null, "par": {"com": "E10", "difere": "obra e o que mudou (cor da parede × janela)"},
+      "diario": {"efetivo": ["Pintor", "Servente"], "equipamentos": ["Andaime"],
+                 "gastos": [{"item": "Tinta", "categoria": "Material de Construção"}]}
+    },
+    {
+      "codigo": "E18", "data": "2026-08-20", "obra": "Reforma Loja Shopping", "etapa": "2. Revestimento e Pintura",
+      "clima": "livre", "local": "Interior", "jornada": "normal", "horas": 8,
+      "texto": "Vistoria da administração do shopping hoje, nenhuma pendência.",
+      "palavras_chave": ["vistoria", "nenhuma pendência"],
+      "pergunta": "a loja passou na vistoria?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Pintor", "Pedreiro", "Eletricista"], "equipamentos": ["Andaime"],
+                 "gastos": [{"item": "Massa corrida", "categoria": "Material de Construção"}]}
+    },
+    {
+      "codigo": "E01", "data": "2026-08-27", "obra": "Casa Condomínio", "etapa": "1. Fundação",
+      "clima": {"manha": "Sol", "tarde": "Sol"}, "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Retro acertou o cano da rua abrindo a vala do baldrame. Concessionária veio consertar, vala parada umas 2 h.",
+      "palavras_chave": ["cano da rua", "concessionária", "vala parada"],
+      "pergunta": "teve problema com água?", "estrela": "Q1", "par": {"com": "E02", "difere": "obra, causa (máquina abrindo vala × demolição) e local (Exterior × Interior)"},
+      "diario": {"efetivo": ["Pedreiro", "Servente", "Armador"], "equipamentos": ["Retroescavadeira"],
+                 "gastos": [{"item": "Vergalhão", "categoria": "Material de Construção"}]},
+      "notas": "A turma seguiu na armação; o conserto não teve custo para a obra."
+    },
+    {
+      "codigo": "E07", "data": "2026-08-31", "obra": "Casa Condomínio", "etapa": "1. Fundação",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Esquecemos de pedir o diesel, a retro ficou parada boa parte da manhã.",
+      "palavras_chave": ["esquecemos de pedir"],
+      "pergunta": "a retro ficou parada por quê?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Pedreiro", "Servente", "Armador"], "equipamentos": ["Retroescavadeira"],
+                 "gastos": [{"item": "Diesel", "categoria": "Combustível"}]},
+      "notas": "Falha interna, não de fornecedor (não pode casar com a Q5). A parte manual seguiu com jornada normal."
+    },
+    {
+      "codigo": "E03", "data": "2026-09-03", "obra": "Casa Condomínio", "etapa": "1. Fundação",
+      "clima": {"manha": "Tempestade", "tarde": "Chuva"}, "local": "Exterior", "jornada": "parado", "horas": 2,
+      "texto": "Temporal desde cedo, concretagem do baldrame ficou pra depois. Turma só cobriu as formas e foi liberada.",
+      "palavras_chave": ["ficou pra depois", "foi liberada"],
+      "pergunta": "por que não concretaram o baldrame?", "estrela": null, "par": {"com": "E04", "difere": "a obra parou × não parou (obra aberta × refúgio no interior)"},
+      "diario": {"efetivo": ["Pedreiro", "Servente"], "equipamentos": [], "gastos": []},
+      "notas": "'temporal' é palavra de clima, permitida porque o diário tem tempestade."
+    },
+    {
+      "codigo": "E08", "data": "2026-09-15", "obra": "Casa Condomínio", "etapa": "2. Alvenaria",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Erramos a conta do cimento, tivemos que comprar uns sacos no depósito do bairro pra não parar.",
+      "palavras_chave": ["erramos a conta", "depósito do bairro"],
+      "pergunta": "faltou material alguma vez?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Pedreiro", "Servente"], "equipamentos": ["Betoneira"],
+                 "gastos": [{"item": "Cimento", "categoria": "Material de Construção"}]},
+      "notas": "Falha interna. Sem preço diferenciado: o Gasto não guarda quantidade nem valor unitário."
+    },
+    {
+      "codigo": "E09", "data": "2026-09-22", "obra": "Casa Condomínio", "etapa": "2. Alvenaria",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Parede da sala saiu fora de prumo, desmanchamos e subimos de novo.",
+      "palavras_chave": ["fora de prumo", "desmanchamos"],
+      "pergunta": "teve retrabalho?", "estrela": null, "par": null,
+      "diario": {"efetivo": ["Pedreiro", "Servente"], "equipamentos": ["Betoneira", "Andaime"],
+                 "gastos": [{"item": "Tijolo", "categoria": "Material de Construção"}, {"item": "Cimento", "categoria": "Material de Construção"}]}
+    },
+    {
+      "codigo": "E10", "data": "2026-09-25", "obra": "Casa Condomínio", "etapa": "2. Alvenaria",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Cliente passou aqui e pediu uma janela a mais no quarto dos fundos. Vão já ficou marcado.",
+      "palavras_chave": ["janela a mais", "vão já ficou marcado"],
+      "pergunta": "o cliente pediu alguma mudança?", "estrela": null, "par": {"com": "E17", "difere": "obra e o que mudou (janela × cor da parede)"},
+      "diario": {"efetivo": ["Pedreiro", "Servente", "Mestre de Obras"], "equipamentos": ["Andaime"],
+                 "gastos": [{"item": "Tijolo", "categoria": "Material de Construção"}]}
+    },
+    {
+      "codigo": "E15", "data": "2026-09-29", "obra": "Galpão Logístico", "etapa": "2. Estrutura Metálica",
+      "clima": {"manha": "Sol", "tarde": "Sol"}, "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Montador cortou a mão na rebarba de um perfil, luva tava rasgada. Curativo no canteiro e voltou.",
+      "palavras_chave": ["cortou a mão", "rebarba", "luva", "curativo"],
+      "pergunta": "alguém se machucou?", "estrela": null, "par": null, "no_conjunto_de_avaliacao": true,
+      "diario": {"efetivo": ["Montador", "Soldador", "Servente"], "equipamentos": ["Guindaste"],
+                 "gastos": [{"item": "Perfil metálico", "categoria": "Material de Construção"}, {"item": "Parafuso", "categoria": "Material de Construção"}]},
+      "notas": "Sem gasto de EPI: o catálogo não tem esse item."
+    },
+    {
+      "codigo": "E11", "data": "2026-10-01", "obra": "Casa Condomínio", "etapa": "2. Alvenaria",
+      "clima": "seco", "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Tijolo não chegou. Pedreiros sem serviço, serventes ficaram na limpeza do canteiro.",
+      "palavras_chave": ["não chegou", "sem serviço", "limpeza do canteiro"],
+      "pergunta": "algum fornecedor atrasou?", "estrela": "Q5", "par": {"com": "E12", "difere": "obra, material (tijolo × perfis) e etapa (Alvenaria × intervalo)"},
+      "diario": {"efetivo": ["Servente"], "equipamentos": [], "gastos": []},
+      "notas": "Pedreiros dispensados: só Servente no efetivo."
+    },
+    {
+      "codigo": "E04", "data": "2026-10-02", "obra": "Galpão Logístico", "etapa": "2. Estrutura Metálica",
+      "clima": {"manha": "Sol", "tarde": "Chuva"}, "local": "Interior", "jornada": "normal", "horas": 8,
+      "texto": "Choveu à tarde, levamos a pré-montagem pra área coberta e o ritmo não caiu.",
+      "palavras_chave": ["área coberta", "ritmo não caiu"],
+      "pergunta": "a chuva parou o galpão?", "estrela": "Q2", "par": {"com": "E03", "difere": "não parou × parou (refúgio no interior × obra aberta)"},
+      "diario": {"efetivo": ["Soldador", "Montador", "Servente"], "equipamentos": ["Máquina de solda"],
+                 "gastos": [{"item": "Eletrodo", "categoria": "Material de Construção"}]},
+      "notas": "Único dia com chuva no Galpão entre 28/09 e 04/10."
+    },
+    {
+      "codigo": "E13", "data": "2026-10-05", "obra": "Galpão Logístico", "etapa": "2. Estrutura Metálica",
+      "clima": {"manha": "Sol", "tarde": "Sol"}, "local": "Exterior", "jornada": "normal", "horas": 8,
+      "texto": "Guindaste deu defeito no hidráulico de manhã, locadora trocou depois do almoço. Montagem rendeu meio dia.",
+      "palavras_chave": ["defeito no hidráulico", "locadora trocou"],
+      "pergunta": "deu problema em máquina?", "estrela": "Q3", "par": null,
+      "diario": {"efetivo": ["Montador", "Soldador", "Servente"], "equipamentos": ["Guindaste"],
+                 "gastos": [{"item": "Aluguel de guindaste", "categoria": "Locação"}]},
+      "notas": "A troca pela locadora não teve custo extra."
+    },
+    {
+      "codigo": "E14", "data": "2026-10-07", "obra": "Galpão Logístico", "etapa": "2. Estrutura Metálica",
+      "clima": {"manha": "Nublado", "tarde": "Nublado"}, "local": "Interior", "jornada": "normal", "horas": 8,
+      "texto": "Caiu a energia umas 4 h, gerador segurou a máquina de solda e a pré-montagem seguiu.",
+      "palavras_chave": ["caiu a energia", "gerador segurou"],
+      "pergunta": "o que aconteceu ontem?", "estrela": "Q4", "par": null,
+      "diario": {"efetivo": ["Soldador", "Montador", "Eletricista", "Servente"], "equipamentos": ["Gerador", "Máquina de solda"],
+                 "gastos": [{"item": "Diesel", "categoria": "Combustível"}, {"item": "Eletrodo", "categoria": "Material de Construção"}]}
+    }
+  ],
+  "perguntas_estrela": [
+    {
+      "id": "Q1", "eventos": ["E01"], "modo": "Casa Condomínio",
+      "pergunta": "teve algum problema com água aí na casa?", "parafrase": true, "ferramenta": "busca",
+      "obrigatorio": ["data 27/08", "retroescavadeira acertou a tubulação da rua ao abrir a vala do baldrame", "concessionária consertou", "escavação parada cerca de 2 h"],
+      "aceitavel": ["etapa de Fundação", "turma seguiu na armação", "conserto sem custo para a obra"],
+      "proibido": ["citar o E02 (copa, shopping ou qualquer coisa da Reforma Loja Shopping)", "dizer que não houve problema", "inventar custo de conserto"]
+    },
+    {
+      "id": "Q2", "eventos": ["E04"], "modo": "Galpão Logístico",
+      "pergunta": "semana passada choveu aí no galpão, a turma parou?", "parafrase": "parcial", "ferramenta": "ambas",
+      "obrigatorio": ["declarar o período 28/09 a 04/10", "não parou", "só choveu na tarde de 02/10", "pré-montagem foi para a área coberta"],
+      "aceitavel": ["jornada de 8 h e efetivo do dia", "não há diário em 30/09"],
+      "proibido": ["dizer que a obra parou", "citar chuva em outro dia da semana", "usar dias fora do período"]
+    },
+    {
+      "id": "Q3", "eventos": ["E13"], "modo": "Galpão Logístico",
+      "pergunta": "deu pau em alguma máquina essa semana?", "parafrase": true, "ferramenta": "busca com filtro de período",
+      "obrigatorio": ["declarar o período 05/10 a 08/10", "05/10: guindaste com defeito no hidráulico", "locadora trocou depois do almoço", "montagem rendeu meio dia"],
+      "aceitavel": ["E14 (queda de energia em 07/10, gerador manteve a máquina de solda), desde que não seja chamado de defeito de máquina"],
+      "proibido": ["chamar a queda de energia de defeito de máquina", "citar eventos fora do período (por exemplo, E05)", "dizer que não houve problema"]
+    },
+    {
+      "id": "Q4", "eventos": ["E14"], "modo": "Galpão Logístico",
+      "pergunta": "o que rolou ontem no galpão?", "parafrase": true, "ferramenta": "sql",
+      "obrigatorio": ["data 07/10", "energia caiu por cerca de 4 h", "gerador manteve a máquina de solda", "pré-montagem seguiu"],
+      "aceitavel": ["efetivo e gastos do dia (Diesel, Eletrodo)", "trabalho no interior"],
+      "proibido": ["usar o diário de outro dia", "dizer que não há registro"]
+    },
+    {
+      "id": "Q5", "eventos": ["E11", "E12"], "modo": null,
+      "pergunta": "algum fornecedor furou com a gente?", "parafrase": true, "ferramenta": "busca sem filtro de obra",
+      "obrigatorio": ["E11 com obra e data: Casa Condomínio, 01/10, tijolo não chegou", "E12 com obra e data: Galpão Logístico, 13/07, perfis da estrutura não chegaram"],
+      "aceitavel": ["consequências: pedreiros sem serviço; equipe só na organização do canteiro", "citar o E13 (guindaste trocado pela locadora)"],
+      "proibido": ["citar o E07 ou o E08 (falhas internas)", "perguntar de qual obra se trata (a pergunta é geral)", "descrever o E13 como atraso de entrega ou dizer que a locadora não resolveu"]
+    },
+    {
+      "id": "Q6", "eventos": ["E16"], "modo": "Reforma Loja Shopping",
+      "pergunta": "por que a demolição rendeu pouco?", "parafrase": true, "ferramenta": "ambas",
+      "obrigatorio": ["data 16/07", "jornada de 4 h", "administração do shopping proibiu barulho até as 14 h"],
+      "aceitavel": ["efetivo e gastos do dia (aluguel de caçamba)", "etapa de Demolição"],
+      "proibido": ["atribuir ao clima (a obra é fechada)", "citar outras obras"]
+    }
+  ],
+  "perguntas_relacionadas": [
+    {"pergunta": "alguém se machucou aí no galpão?", "eventos": ["E15"], "modo": "Galpão Logístico", "ferramenta": "busca",
+     "resposta": "Em 29/09, um montador cortou a mão na rebarba de um perfil; a luva estava rasgada; fez curativo no canteiro e voltou."},
+    {"pergunta": "o que rolou ontem?", "eventos": [], "modo": "Casa Condomínio", "ferramenta": "sql",
+     "resposta": "Não há registro em 07/10, sem usar o diário de outro dia."},
+    {"pergunta": "o que rolou ontem?", "eventos": [], "modo": "Reforma Loja Shopping", "ferramenta": "sql",
+     "resposta": "Sem registro; a obra foi concluída em 29/08."},
+    {"pergunta": "quanto gastamos de mão de obra na casa?", "eventos": [], "modo": "Casa Condomínio", "ferramenta": "sql",
+     "resposta": "R$ 0 em Mão de Obra Externa. A equipe própria registra horas (total pelo SQL), não custo. Diferenciar 'categoria sem gasto' de 'sem registro'."},
+    {"pergunta": "o cliente pediu alguma mudança?", "eventos": ["E10", "E17"], "modo": null, "ferramenta": "busca sem filtro de obra",
+     "resposta": "Sim, dois pedidos: Casa Condomínio, 25/09, uma janela a mais no quarto dos fundos (vão já marcado); Reforma Loja Shopping, 05/08, trocar a cor da parede do fundo (repintura).",
+     "obrigatorio": ["E10 com obra e data", "E17 com obra e data"], "proibido": ["perguntar de qual obra se trata (a pergunta é geral)"]},
+    {"pergunta": "o cliente pediu alguma mudança?", "eventos": ["E10"], "modo": "Casa Condomínio", "ferramenta": "busca",
+     "resposta": "Sim, em 25/09 o cliente pediu uma janela a mais no quarto dos fundos; o vão já foi marcado.",
+     "obrigatorio": ["E10 com data"], "proibido": ["citar o E17 (outra obra)"]},
+    {"pergunta": "o cliente pediu alguma mudança?", "eventos": ["E17"], "modo": "Reforma Loja Shopping", "ferramenta": "busca",
+     "resposta": "Sim, em 05/08 o cliente mudou a cor da parede do fundo, que vai ser repintada.",
+     "obrigatorio": ["E17 com data"], "proibido": ["citar o E10 (outra obra)"]},
+    {"pergunta": "quanto já foi de cimento na casa?", "eventos": [], "modo": "Casa Condomínio", "ferramenta": "sql",
+     "resposta": "Soma dos gastos com item 'Cimento' (categoria Material de Construção) na Casa Condomínio, calculada por SQL sobre os dados gerados. Não depende do E08.",
+     "obrigatorio": ["valor total igual à soma por SQL", "deixar claro que é o item Cimento dentro de Material de Construção"], "proibido": ["somar a categoria inteira de Material de Construção"]}
+  ]
+}

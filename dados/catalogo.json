@@ -1,0 +1,87 @@
+{
+  "versao": 1,
+  "descricao": "Catálogo único de funções, equipamentos e gastos, com a compatibilidade por etapa. Usado pelo validador e pelo gerador; na etapa 1 passa a ser também o valor padrão da tela. A categoria 'Outros' é permitida no app e proibida nos dados de avaliação.",
+  "funcoes": [
+    "Servente", "Pedreiro", "Carpinteiro", "Armador", "Eletricista", "Pintor", "Mestre de Obras",
+    "Operador de Máquinas", "Soldador", "Montador"
+  ],
+  "tipos_equipamento": ["Ferramenta Manual", "Ferramenta Elétrica", "Maquinário Pesado", "Veículo", "EPI/EPC"],
+  "equipamentos": {
+    "Betoneira": "Maquinário Pesado",
+    "Retroescavadeira": "Maquinário Pesado",
+    "Compactador": "Maquinário Pesado",
+    "Guindaste": "Maquinário Pesado",
+    "Andaime": "EPI/EPC",
+    "Gerador": "Ferramenta Elétrica",
+    "Máquina de solda": "Ferramenta Elétrica",
+    "Caminhão": "Veículo",
+    "Guincho": "Veículo"
+  },
+  "categorias_gasto": ["Material de Construção", "Mão de Obra Externa", "Locação", "Combustível", "Alimentação"],
+  "itens_gasto": {
+    "Cimento": "Material de Construção",
+    "Areia": "Material de Construção",
+    "Brita": "Material de Construção",
+    "Vergalhão": "Material de Construção",
+    "Tijolo": "Material de Construção",
+    "Tinta": "Material de Construção",
+    "Madeira": "Material de Construção",
+    "Parafuso": "Material de Construção",
+    "Massa corrida": "Material de Construção",
+    "Perfil metálico": "Material de Construção",
+    "Eletrodo": "Material de Construção",
+    "Diesel": "Combustível",
+    "Aluguel de caçamba": "Locação",
+    "Aluguel de rolo compactador": "Locação",
+    "Aluguel de guindaste": "Locação",
+    "Aluguel de andaime": "Locação",
+    "Empreiteira de solda": "Mão de Obra Externa",
+    "Topógrafo terceirizado": "Mão de Obra Externa",
+    "Gesseiro terceirizado": "Mão de Obra Externa",
+    "Marmitex": "Alimentação"
+  },
+  "compatibilidade": {
+    "1. Fundação": {
+      "locais": ["Exterior"],
+      "funcoes": ["Pedreiro", "Servente", "Armador", "Carpinteiro", "Mestre de Obras"],
+      "equipamentos": ["Retroescavadeira", "Betoneira", "Compactador", "Caminhão"],
+      "itens": ["Cimento", "Areia", "Brita", "Vergalhão", "Madeira", "Diesel", "Marmitex"]
+    },
+    "2. Alvenaria": {
+      "locais": ["Exterior"],
+      "funcoes": ["Pedreiro", "Servente", "Mestre de Obras"],
+      "equipamentos": ["Betoneira", "Andaime"],
+      "itens": ["Tijolo", "Cimento", "Areia", "Aluguel de andaime", "Marmitex"]
+    },
+    "1. Demolição": {
+      "locais": ["Interior"],
+      "funcoes": ["Servente", "Pedreiro", "Mestre de Obras"],
+      "equipamentos": ["Caminhão", "Gerador"],
+      "itens": ["Aluguel de caçamba", "Marmitex"]
+    },
+    "2. Revestimento e Pintura": {
+      "locais": ["Interior"],
+      "funcoes": ["Pedreiro", "Pintor", "Eletricista", "Servente"],
+      "equipamentos": ["Andaime"],
+      "itens": ["Tinta", "Cimento", "Areia", "Massa corrida", "Aluguel de andaime", "Gesseiro terceirizado", "Marmitex"]
+    },
+    "1. Terraplanagem": {
+      "locais": ["Exterior"],
+      "funcoes": ["Operador de Máquinas", "Servente", "Mestre de Obras"],
+      "equipamentos": ["Retroescavadeira", "Compactador", "Caminhão"],
+      "itens": ["Diesel", "Aluguel de rolo compactador", "Topógrafo terceirizado", "Marmitex"]
+    },
+    "Intervalo": {
+      "locais": ["Exterior"],
+      "funcoes": ["Servente", "Mestre de Obras"],
+      "equipamentos": ["Caminhão"],
+      "itens": ["Marmitex"]
+    },
+    "2. Estrutura Metálica": {
+      "locais": ["Exterior", "Interior"],
+      "funcoes": ["Soldador", "Montador", "Servente", "Eletricista", "Mestre de Obras"],
+      "equipamentos": ["Guindaste", "Máquina de solda", "Gerador"],
+      "itens": ["Perfil metálico", "Parafuso", "Eletrodo", "Diesel", "Aluguel de guindaste", "Empreiteira de solda", "Marmitex"]
+    }
+  }
+}
