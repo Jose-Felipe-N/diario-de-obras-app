@@ -20,4 +20,5 @@ No Galpão Logístico (obra mista), em parte dos dias de chuva a equipe vai para
 
 ## Roadmap
 
+- **Listas da tela persistidas no banco.** O usuário pode acrescentar funções, equipamentos e itens de gasto para adaptar o sistema à sua obra, mas essas edições vivem só na sessão do navegador: somem quando o app reinicia e cada navegador tem a sua lista. Persistir exige uma tabela de catálogo e uma rota na API. Ficou para depois da avaliação, para não alterar o sistema durante a medição.
 - **Quantidade e valor unitário nos gastos.** Hoje o modelo `Gasto` guarda só `item`, `categoria` e `valor` total. Acrescentar `quantidade` e `valor_unitario` permitiria perguntas sobre preço, como "quanto pagamos a mais no cimento de emergência?". Mudaria o frontend, os schemas, o seed e os dados de avaliação, por isso ficou fora desta rodada.
