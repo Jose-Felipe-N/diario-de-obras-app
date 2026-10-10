@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-import os
 import json
 from datetime import datetime
-from dotenv import load_dotenv
-from google import genai 
+from google import genai
 from google.genai import types
+import config
 from database import get_db
-import models 
+import models
 import schemas
 from datetime import date
 
-load_dotenv()
-cliente_ia = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+cliente_ia = genai.Client(api_key=config.GEMINI_API_KEY)
 
 router = APIRouter(prefix="/ia", tags=["Analista IA"])
 
@@ -151,7 +149,7 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
 
     try:
         resposta = cliente_ia.models.generate_content(
-            model='gemini-2.5-flash',
+            model=config.GEMINI_MODEL,
             contents=prompt_sistema,
             config=types.GenerateContentConfig(response_mime_type="application/json"),
         )

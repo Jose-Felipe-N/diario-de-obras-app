@@ -8,11 +8,12 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import plotly.express as px
 
+from config import API_URL
 from opcoes_tela import adicionar_opcao, remover_opcao
 
 st.set_page_config(page_title="Diário de Obras", layout="wide", initial_sidebar_state="expanded")
 
-URL_OBRAS = "http://127.0.0.1:8000/obras/"
+URL_OBRAS = f"{API_URL}/obras/"
 CAMINHO_CATALOGO = Path(__file__).parent / "dados" / "catalogo.json"
 
 
@@ -123,7 +124,7 @@ if menu_selecionado == "Início":
     st.write("Bem-vindo ao Centro de Comando de sua construtora.")
     st.divider()
     try:
-        resposta = requests.get("http://127.0.0.1:8000/dashboard/")
+        resposta = requests.get(f"{API_URL}/dashboard/")
         if resposta.status_code == 200:
             dados_dash = resposta.json()
             st.subheader("📊 Resumo de Hoje")
@@ -188,7 +189,7 @@ elif menu_selecionado == "Painel de Obras":
                             st.subheader(f"🏢 Obra: {obra['nome']}")
                         with col_del:
                             if st.button("🗑️ Excluir Obra", key=f"del_obra_{obra['id']}"):
-                                resp_del = requests.delete(f"http://127.0.0.1:8000/obras/{obra['id']}")
+                                resp_del = requests.delete(f"{API_URL}/obras/{obra['id']}")
                                 if resp_del.status_code == 200:
                                     st.success("Obra removida!")
                                     st.rerun()
@@ -205,7 +206,7 @@ elif menu_selecionado == "Painel de Obras":
                             st.markdown("<br>", unsafe_allow_html=True)
                             if st.button("Atualizar Status", key=f"btn_status_{obra['id']}"):
                                 resp_put = requests.put(
-                                    f"http://127.0.0.1:8000/obras/{obra['id']}/status",
+                                    f"{API_URL}/obras/{obra['id']}/status",
                                     json={"status": novo_status}
                                 )
                                 if resp_put.status_code == 200:
@@ -215,7 +216,7 @@ elif menu_selecionado == "Painel de Obras":
                         st.markdown("<br>", unsafe_allow_html=True)
 
                         try:
-                            res_progresso = requests.get(f"http://127.0.0.1:8000/obras/{obra['id']}/progresso")
+                            res_progresso = requests.get(f"{API_URL}/obras/{obra['id']}/progresso")
                             valor_progresso = res_progresso.json().get("progresso", 0.0) if res_progresso.status_code == 200 else 0.0
                         except:
                             valor_progresso = 0.0
@@ -285,14 +286,14 @@ elif menu_selecionado == "Painel de Obras":
                                     with col_e1:
                                         if st.button("💾 Salvar", key=f"save_ed_{diario['id']}", use_container_width=True):
                                             requests.put(
-                                                f"http://127.0.0.1:8000/diarios/{diario['id']}",
+                                                f"{API_URL}/diarios/{diario['id']}",
                                                 json={"clima_manha": edit_m, "clima_tarde": edit_t, "observacoes_gerais": edit_obs}
                                             )
                                             st.success("Diário atualizado!")
                                             st.rerun()
                                     with col_e2:
                                         if st.button("🗑️ Excluir", key=f"del_dia_{diario['id']}", use_container_width=True, type="primary"):
-                                            requests.delete(f"http://127.0.0.1:8000/diarios/{diario['id']}")
+                                            requests.delete(f"{API_URL}/diarios/{diario['id']}")
                                             st.success("Diário removido!")
                                             st.rerun()
 
@@ -544,18 +545,18 @@ elif menu_selecionado == "Novo Diário":
                     obra_id_real = obra_selecionada["id"]
                     pacote_diario = {"data": str(data_diario), "clima_manha": clima_manha, "clima_tarde": clima_tarde, "observacoes_gerais": observacoes, "local_dia": local_dia, "obra_id": obra_id_real}
                     try:
-                        resposta_diario = requests.post("http://127.0.0.1:8000/diarios/", json=pacote_diario)
+                        resposta_diario = requests.post(f"{API_URL}/diarios/", json=pacote_diario)
                         if resposta_diario.status_code == 200:
                             diario_criado = resposta_diario.json()
                             diario_id_gerado = diario_criado["id"]
                             for trab in tabela_trabalhadores:
                                 if trab.get("funcao") and trab.get("quantidade"):
-                                    requests.post("http://127.0.0.1:8000/efetivos/", json={**trab, "diario_id": diario_id_gerado})
+                                    requests.post(f"{API_URL}/efetivos/", json={**trab, "diario_id": diario_id_gerado})
                             for equip in tabela_equipamentos:
                                 if equip.get("nome_item") and equip.get("quantidade"):
                                     tipo_automatico = st.session_state["dict_equipamentos"].get(equip["nome_item"], "Outros")
                                     
-                                    requests.post("http://127.0.0.1:8000/equipamentos/", json={
+                                    requests.post(f"{API_URL}/equipamentos/", json={
                                         "nome_item": equip["nome_item"],
                                         "tipo": tipo_automatico,
                                         "quantidade": equip["quantidade"],
@@ -566,7 +567,7 @@ elif menu_selecionado == "Novo Diário":
                                 if gasto.get("item") and gasto.get("valor", 0) > 0:
                                     cat_automatica = st.session_state["dict_gastos"].get(gasto["item"], "Outros")
                                     
-                                    requests.post("http://127.0.0.1:8000/gastos/", json={
+                                    requests.post(f"{API_URL}/gastos/", json={
                                         "item": gasto["item"],
                                         "categoria": cat_automatica,
                                         "valor": gasto["valor"],
@@ -586,7 +587,7 @@ elif menu_selecionado == "Analista IA":
     st.markdown("Converse com o sistema sobre o andamento das obras, gastos e uso de equipamentos.")
 
     try:
-        res_obras = requests.get("http://127.0.0.1:8000/ia/obras_disponiveis")
+        res_obras = requests.get(f"{API_URL}/ia/obras_disponiveis")
         lista_obras = res_obras.json() if res_obras.status_code == 200 else []
     except:
         lista_obras = []
@@ -621,7 +622,7 @@ elif menu_selecionado == "Analista IA":
                     historico_envio = st.session_state["mensagens_chat"][:-1]
 
                     resposta_api = requests.post(
-                        "http://127.0.0.1:8000/ia/chat",
+                        f"{API_URL}/ia/chat",
                         json={
                             "mensagem": pergunta,
                             "historico": historico_envio,
@@ -791,7 +792,7 @@ elif menu_selecionado == "Orçamentos":
                         }
                         
                         try:
-                            resp = requests.post("http://127.0.0.1:8000/orcamentos/", json=pacote_orcamento)
+                            resp = requests.post(f"{API_URL}/orcamentos/", json=pacote_orcamento)
                             if resp.status_code == 200:
                                 st.success("Orçamento gerado com sucesso!")
                                 st.rerun()
@@ -808,7 +809,7 @@ elif menu_selecionado == "Orçamentos":
         st.subheader("🗂️ Orçamentos Recentes")
         
         try:
-            resp_lista = requests.get("http://127.0.0.1:8000/orcamentos/")
+            resp_lista = requests.get(f"{API_URL}/orcamentos/")
             orcamentos = resp_lista.json() if resp_lista.status_code == 200 else []
         except:
             orcamentos = []
@@ -860,11 +861,11 @@ elif menu_selecionado == "Orçamentos":
                         
                         if orc['status'] == "Em análise":
                             if st.button("✅ Aprovar", key=f"aprovar_{orc['id']}", use_container_width=True, type="primary"):
-                                requests.put(f"http://127.0.0.1:8000/orcamentos/{orc['id']}/status", json={"status": "Aprovado"})
+                                requests.put(f"{API_URL}/orcamentos/{orc['id']}/status", json={"status": "Aprovado"})
                                 st.rerun()
                                 
                             if st.button("❌ Recusar", key=f"negar_{orc['id']}", use_container_width=True):
-                                requests.put(f"http://127.0.0.1:8000/orcamentos/{orc['id']}/status", json={"status": "Recusado"})
+                                requests.put(f"{API_URL}/orcamentos/{orc['id']}/status", json={"status": "Recusado"})
                                 st.rerun()
                                 
                         elif orc['status'] == "Aprovado":
@@ -893,7 +894,7 @@ elif menu_selecionado == "Orçamentos":
                                             "data_inicio": str(dt_obra)
                                         }
                                         resp = requests.post(
-                                            f"http://127.0.0.1:8000/orcamentos/{orc['id']}/converter", 
+                                            f"{API_URL}/orcamentos/{orc['id']}/converter", 
                                             json=payload
                                         )
                                         

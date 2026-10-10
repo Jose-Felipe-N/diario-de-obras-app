@@ -9,7 +9,6 @@ from sqlalchemy.pool import StaticPool
 import database
 import models
 from main import app
-from routers import dashboard, diarios, obras, registros
 
 
 @pytest.fixture
@@ -26,8 +25,6 @@ def cliente():
         finally:
             db.close()
 
-    # Enquanto o get_db não é único (item f da etapa 1), cada router tem a sua cópia.
-    for dependencia in (database.get_db, obras.get_db, diarios.get_db, registros.get_db, dashboard.get_db):
-        app.dependency_overrides[dependencia] = get_db_teste
+    app.dependency_overrides[database.get_db] = get_db_teste
     yield TestClient(app)
     app.dependency_overrides.clear()

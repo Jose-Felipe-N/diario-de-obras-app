@@ -3,17 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import date
 import models
-from database import SessionLocal
+from database import get_db
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 CLIMA_RUIM = ("Chuva", "Tempestade")

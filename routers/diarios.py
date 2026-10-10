@@ -1,17 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models, schemas
-from database import SessionLocal
+from database import get_db
 
 router = APIRouter(prefix="/diarios", tags=["Diários"])
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/")
