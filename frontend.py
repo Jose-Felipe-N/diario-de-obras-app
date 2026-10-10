@@ -1,3 +1,7 @@
+import copy
+import json
+from pathlib import Path
+
 import streamlit as st
 import requests
 from streamlit_option_menu import option_menu
@@ -7,37 +11,31 @@ import plotly.express as px
 st.set_page_config(page_title="Diário de Obras", layout="wide", initial_sidebar_state="expanded")
 
 URL_OBRAS = "http://127.0.0.1:8000/obras/"
+CAMINHO_CATALOGO = Path(__file__).parent / "dados" / "catalogo.json"
 
-if "cat_efetivo" not in st.session_state:
-    st.session_state["cat_efetivo"] = ["Servente", "Pedreiro", "Carpinteiro", "Armador", "Eletricista", "Pintor", "Mestre de Obras"]
 
-if "cat_equip_tipo" not in st.session_state:
-    st.session_state["cat_equip_tipo"] = ["Ferramenta Manual", "Ferramenta Elétrica", "Maquinário Pesado", "Veículo", "EPI/EPC"]
+@st.cache_data
+def carregar_catalogo():
+    """Catálogo único de funções, equipamentos e gastos (o mesmo usado nos dados de avaliação)."""
+    with open(CAMINHO_CATALOGO, encoding="utf-8") as f:
+        return json.load(f)
 
-if "cat_equip_nomes" not in st.session_state:
-    st.session_state["cat_equip_nomes"] = ["Betoneira", "Retroescavadeira", "Andaime", "Compactador", "Gerador", "Caminhão", "Guincho"]
 
-if "cat_gastos_categorias" not in st.session_state:
-    st.session_state["cat_gastos_categorias"] = ["Material de Construção", "Mão de Obra Externa", "Locação", "Combustível", "Alimentação"]
-
-if "cat_gastos_itens" not in st.session_state:
-    st.session_state["cat_gastos_itens"] = ["Cimento", "Areia", "Brita", "Vergalhão", "Tijolo", "Tinta", "Madeira", "Parafuso", "Diesel"]
-
-if "dict_equipamentos" not in st.session_state:
-    st.session_state["dict_equipamentos"] = {
-        "Betoneira": "Maquinário Pesado", "Retroescavadeira": "Maquinário Pesado",
-        "Andaime": "EPI/EPC", "Compactador": "Maquinário Pesado",
-        "Gerador": "Ferramenta Elétrica", "Caminhão": "Veículo", "Guincho": "Veículo"
-    }
-
-if "dict_gastos" not in st.session_state:
-    st.session_state["dict_gastos"] = {
-        "Cimento": "Material de Construção", "Areia": "Material de Construção",
-        "Brita": "Material de Construção", "Vergalhão": "Material de Construção",
-        "Tijolo": "Material de Construção", "Tinta": "Material de Construção",
-        "Madeira": "Material de Construção", "Parafuso": "Material de Construção",
-        "Diesel": "Combustível"
-    }
+# Valores padrão das listas. As edições feitas em Configurações ficam só na
+# sessão e se perdem quando o app reinicia.
+catalogo = carregar_catalogo()
+listas_padrao = {
+    "cat_efetivo": catalogo["funcoes"],
+    "cat_equip_tipo": catalogo["tipos_equipamento"],
+    "cat_equip_nomes": list(catalogo["equipamentos"]),
+    "cat_gastos_categorias": catalogo["categorias_gasto"],
+    "cat_gastos_itens": list(catalogo["itens_gasto"]),
+    "dict_equipamentos": catalogo["equipamentos"],
+    "dict_gastos": catalogo["itens_gasto"],
+}
+for chave, padrao in listas_padrao.items():
+    if chave not in st.session_state:
+        st.session_state[chave] = copy.deepcopy(padrao)
 
 if "mostrar_painel" not in st.session_state:
     st.session_state["mostrar_painel"] = False
