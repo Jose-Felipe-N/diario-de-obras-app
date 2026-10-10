@@ -1,0 +1,622 @@
+[
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-08-24",
+    "texto": "Início da obra, com a locação das sapatas. Retro começou a escavação."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-08-25",
+    "texto": "Escavação das sapatas seguiu. Carpinteiro começou as formas, e o vergalhão chegou."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-08-26",
+    "texto": "Concretamos o lastro das sapatas do lado norte, armadores adiantando as gaiolas."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-08-29",
+    "texto": "Sábado rendeu bem, armação das vigas baldrame quase toda montada."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-01",
+    "texto": "Concretagem de 6 sapatas pela manhã. À tarde, retro abrindo o resto das valas."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-02",
+    "texto": "Formas do baldrame montadas no trecho dos fundos, armação conferida pelo mestre."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-04",
+    "texto": "Tempo firme, concretamos o baldrame da quinta. Carpinteiros reforçaram as formas."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-07",
+    "texto": "Desforma do baldrame e reaterro das valas com a retro. Fundação, enfim, fechada."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-08",
+    "texto": "Começo da alvenaria: marcação das paredes e primeira fiada assentada em toda a casa."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-09",
+    "texto": "Paredes da sala e da cozinha já com 8 fiadas. Andaime montado na fachada."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-10",
+    "texto": "Chuva no meio da tarde, paramos às 15h. Antes disso, a parede dos quartos avançou bem."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-11",
+    "texto": "Assentamento nas paredes do banheiro e da lavanderia, argamassa rendendo bem."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-14",
+    "texto": "Vergas das portas da frente concretadas, parede da fachada passou da metade."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-17",
+    "texto": "Chuva forte de manhã, só começamos depois do almoço. A tarde foi de assentamento."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-18",
+    "texto": "Previsão de tempestade à tarde, dia parado sem equipe no canteiro."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-19",
+    "texto": "Sábado com turma completa. As paredes dos quartos chegaram no respaldo."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-21",
+    "texto": "Garoa de manhã segurou o começo do serviço. Depois, seguimos no cintamento."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-23",
+    "texto": "Cinta de amarração concretada na ala dos quartos, sol forte o dia todo."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-24",
+    "texto": "Choveu o dia inteiro, conseguimos 4 horas de assentamento nas paredes internas."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-29",
+    "texto": "Tijolos descarregados de manhã. Parede da garagem fechada até o topo, sem sobra."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-09-30",
+    "texto": "Pancada de chuva cedo, serviço só a partir das 11h. Fechamos a platibanda da frente."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-10-02",
+    "texto": "Chuva o dia todo, só deu pra adiantar o chapisco das paredes internas por 4 horas."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-10-05",
+    "texto": "Reposição de tijolos assentada, parede da cozinha quase no respaldo."
+  },
+  {
+    "obra": "Casa Condomínio",
+    "data": "2026-10-06",
+    "texto": "Últimos trechos de alvenaria. Mestre conferindo esquadro e nível de todas as paredes."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-10",
+    "texto": "Início da terraplanagem, com a marcação da área. Primeiros caminhões de aterro no lote."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-11",
+    "texto": "Corte do talude norte com a retro, rolo compactador alugado chegou à tarde."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-12",
+    "texto": "Aterro da plataforma em camadas de 20 cm, compactação logo em seguida."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-15",
+    "texto": "Segunda camada da plataforma compactada. Caminhões rodando o dia inteiro, sem parar."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-16",
+    "texto": "Chuva fraca desde o início, rendemos 6 horas no corte do lado sul."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-19",
+    "texto": "Topógrafo conferiu os níveis da plataforma. Compactação aprovada no trecho leste, segue o plano."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-22",
+    "texto": "Recompactação do trecho leste e regularização do acesso dos caminhões."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-23",
+    "texto": "Chuva o dia todo, só 4 horas de serviço espalhando material no aterro."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-24",
+    "texto": "Terreno ainda úmido, compactação com mais cuidado no trecho central."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-25",
+    "texto": "Tempestade o dia inteiro, só 2 horas de serviço cobrindo o material. Dia parado."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-26",
+    "texto": "Retomada forte da compactação. Plataforma central chegou na cota de projeto, conferida."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-06-27",
+    "texto": "Chuva no começo da tarde encerrou o sábado às 14h. Talude sul quase pronto."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-01",
+    "texto": "Drenagem provisória aberta nas bordas, compactação seguindo no lado oeste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-03",
+    "texto": "Última camada do aterro lançada. Rolo trabalhando até o fim do expediente, sem folga."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-04",
+    "texto": "Chuva de manhã, serviço só depois do almoço. Acertamos o caimento da plataforma."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-06",
+    "texto": "Acabamento dos taludes com a retro e abertura das valetas de drenagem."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-07",
+    "texto": "Ajuste fino de nível na plataforma, conferência com o mestre ponto a ponto."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-08",
+    "texto": "Ensaio de compactação aprovado no trecho central. Só retoques nas bordas, agora."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-10",
+    "texto": "Fim da terraplanagem, plataforma entregue nivelada pra estrutura metálica."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-11",
+    "texto": "Preparação para a estrutura: marcação dos chumbadores e conferência das bases."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-15",
+    "texto": "Primeiros perfis recebidos. Montagem dos pilares do eixo 1, com o guindaste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-16",
+    "texto": "Chuva o dia todo, 5 horas de serviço só no parafusamento dos pilares."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-17",
+    "texto": "Pilares do eixo 2 montados e soldados nas bases, guindaste o dia inteiro."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-20",
+    "texto": "Vigas de travamento entre os primeiros eixos, parafusos comprados pra semana."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-22",
+    "texto": "Nova carga de perfis descarregada. Solda das ligações dos pilares do eixo 3, em andamento."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-24",
+    "texto": "Pilares do último eixo erguidos, mestre conferindo o alinhamento com a trena."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-25",
+    "texto": "Sábado de montagem das primeiras tesouras, içamento com o guindaste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-27",
+    "texto": "Pré-montagem das tesouras no galpão de apoio. Gerador tocando as ferramentas, sem parada."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-28",
+    "texto": "Chuva de manhã, solda das tesouras só a partir do meio-dia."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-29",
+    "texto": "Empreiteira de solda reforçou a equipe. Três tesouras içadas e fixadas no dia."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-07-31",
+    "texto": "Terças da cobertura no primeiro vão, parafusamento conferido pelo montador."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-01",
+    "texto": "Tempestade o dia todo, equipe inteira na solda das peças dentro do galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-03",
+    "texto": "Chuva à tarde, pré-montagem dos contraventamentos seguiu no galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-04",
+    "texto": "Contraventamentos montados entre os eixos. Empreiteira na solda, junto com a equipe."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-06",
+    "texto": "Dia de pré-montagem no galpão de apoio, empreiteira soldando as terças do vão 4."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-07",
+    "texto": "Chuva de manhã, turma toda na solda das peças dentro do galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-08",
+    "texto": "Garoa de manhã, montagem só depois das 11h. Tesouras do vão 5 içadas."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-11",
+    "texto": "Chuva no começo da manhã, depois tempo firme pra montar as terças do vão 5."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-12",
+    "texto": "Recebemos mais perfis. Montagem das tesouras do vão seguinte, com o guindaste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-14",
+    "texto": "Chuva fina o dia inteiro, 5 horas de serviço apertando parafusos das terças."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-15",
+    "texto": "Sábado produtivo. A cobertura do sexto vão ficou toda estruturada, com as terças."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-17",
+    "texto": "Chuva de manhã, solda das calhas metálicas seguiu no galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-18",
+    "texto": "Pré-montagem das vigas do mezanino no galpão de apoio, solda o dia todo."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-20",
+    "texto": "Chuva o dia inteiro. Equipe toda dentro do galpão de apoio, soldando as vigas."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-21",
+    "texto": "Vigas do mezanino içadas e soldadas no lugar. Eletricista na iluminação provisória."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-24",
+    "texto": "Chuva forte à tarde, montagem interrompida depois de 4 horas de solda."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-25",
+    "texto": "Fechamento do mezanino com as vigas secundárias. Solda conferida pelo mestre, sem retoque."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-27",
+    "texto": "Ajustes de solda no mezanino e nas ligações dos pilares do eixo 5."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-28",
+    "texto": "Empreiteira terminou a solda pesada das tesouras. Guindaste já no vão 7."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-29",
+    "texto": "Montagem das tesouras do vão 7, parafusamento das terças no fim da tarde."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-08-31",
+    "texto": "Tempestade de manhã, pré-montagem das peças do vão 8 no galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-02",
+    "texto": "Tesouras do vão 8 içadas e soldadas. Guindaste trabalhou o dia todo, sem folga."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-03",
+    "texto": "Terças do vão 8 fixadas, eletricista puxando cabos pros refletores do canteiro."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-04",
+    "texto": "Contraventamento da cobertura nos dois últimos vãos. Conferência, peça a peça, com o montador."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-07",
+    "texto": "Montagem das tesouras do vão 9 começou. Parafusos da cobertura reforçados, por segurança."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-09",
+    "texto": "Tesouras do vão 9 no lugar, solda das ligações seguindo pela tarde."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-10",
+    "texto": "Nova remessa de perfis. Terças do vão 9 montadas, com o guindaste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-11",
+    "texto": "Chuva à tarde, pré-montagem das terças do último vão seguiu no galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-14",
+    "texto": "Tesouras do vão 10 içadas, eletricista ajustando a iluminação do canteiro."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-16",
+    "texto": "Terças do último vão parafusadas. Guindaste reposicionado, agora no lado oeste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-18",
+    "texto": "Montagem dos pilares do oitão oeste, solda e parafusamento no mesmo dia."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-19",
+    "texto": "Vigas do oitão oeste fixadas. Sábado com equipe completa, toda na estrutura."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-22",
+    "texto": "Pré-montagem das peças do oitão leste no galpão de apoio, solda o dia inteiro."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-23",
+    "texto": "Empreiteira de volta pra solda do oitão leste. Guindaste içando as vigas, uma a uma."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-24",
+    "texto": "Compras da semana feitas, solda das peças do oitão leste no galpão de apoio."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-25",
+    "texto": "Parafusamento manual das ligações do oitão leste. Sem içamento hoje, por programação."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-09-28",
+    "texto": "Oitão leste montado. Começo do fechamento lateral, com as terças de parede."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-10-01",
+    "texto": "Pré-montagem das terças de fechamento lateral no galpão de apoio, sem pressa."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-10-03",
+    "texto": "Terças de fechamento lateral do lado norte instaladas com o guindaste."
+  },
+  {
+    "obra": "Galpão Logístico",
+    "data": "2026-10-06",
+    "texto": "Fechamento lateral do lado sul começou. Eletricista na fiação dos refletores, à tarde."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-11",
+    "texto": "Retirada do forro antigo e das luminárias. A primeira caçamba de entulho, cheia, foi trocada."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-13",
+    "texto": "Demolição das divisórias de gesso do estoque, gerador ligado pras ferramentas."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-17",
+    "texto": "Piso antigo removido no salão, caminhão levou 2 caçambas de entulho."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-18",
+    "texto": "Fim da demolição, loja limpa e pronta pro revestimento. Última caçamba retirada."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-20",
+    "texto": "Início do revestimento, com reboco nas paredes do fundo. Material de pintura comprado."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-21",
+    "texto": "Reboco do salão concluído, pintores começaram a lixar as paredes laterais."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-23",
+    "texto": "Gesseiro terceirizado começou o forro novo. Eletricista, em paralelo, passou os pontos de luz."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-24",
+    "texto": "Forro de gesso do salão fechado, contrapiso do estoque nivelado pelos pedreiros."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-25",
+    "texto": "Primeira demão de massa corrida nas paredes laterais, luminárias instaladas."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-27",
+    "texto": "Segunda demão de massa no salão, pedreiros assentando o rodapé do estoque."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-28",
+    "texto": "Andaime alugado pro pé-direito da vitrine. Massa corrida na parede alta, de cima a baixo."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-07-31",
+    "texto": "Lixamento geral e acabamento das tomadas, loja já com cara de pronta."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-01",
+    "texto": "Gesseiro voltou pra sanca da vitrine. No provador, rejunte do piso feito."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-03",
+    "texto": "Pintura do teto do salão em 2 demãos, fita e lona protegendo o piso novo."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-04",
+    "texto": "Primeira demão de tinta nas paredes laterais. Massa retocada nos cantos, onde precisou."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-06",
+    "texto": "Eletricista instalou o quadro novo da loja. Pintores, no estoque, adiantando a massa."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-08",
+    "texto": "Pedreiros fecharam o revestimento do banheiro dos funcionários, sem compras hoje."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-10",
+    "texto": "Segunda demão de tinta no estoque e no corredor. Salão livre pros pedreiros, que fizeram o rodapé."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-11",
+    "texto": "Massa corrida nas portas e batentes, pedreiros assentando a soleira da entrada."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-12",
+    "texto": "Retoques de massa no corredor. Rodapé do salão, assentado até a metade."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-13",
+    "texto": "Instalação das luminárias do salão. Pintores lixando a massa do corredor."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-14",
+    "texto": "Pintura do corredor e do estoque, andaime da vitrine devolvido no fim do dia."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-17",
+    "texto": "Vitrine em acabamento: massa, lixa e primeira demão. Pedreiros no rejunte do salão."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-19",
+    "texto": "Contrapiso da área de serviço executado, enquanto a tinta das paredes secava."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-21",
+    "texto": "Últimos ajustes no forro e nas tomadas. Retoques de massa, só no salão."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-22",
+    "texto": "Segunda demão de tinta no salão inteiro, turma trabalhou até o fim da tarde."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-24",
+    "texto": "Pintura da vitrine concluída. Pedreiros limpando o rejunte do piso, peça por peça."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-26",
+    "texto": "Retoques finais de massa e teste de todos os circuitos com o eletricista."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-28",
+    "texto": "Última demão de tinta nas paredes do fundo, loja quase pronta pra entrega."
+  },
+  {
+    "obra": "Reforma Loja Shopping",
+    "data": "2026-08-29",
+    "texto": "Retoques finais e desmontagem do andaime. Loja entregue, reforma concluída."
+  }
+]
