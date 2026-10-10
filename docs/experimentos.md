@@ -26,15 +26,23 @@ No Galpão Logístico (obra mista), em parte dos dias de chuva a equipe vai para
 
 ## Método
 
+### Conjunto de perguntas
+
+São **20 perguntas** em [dados/perguntas.json](../dados/perguntas.json), cobrindo sete grupos: texto livre, clima com texto, números, premissa errada, orçado contra gasto, segurança (fora de escopo, injeção de prompt e isolamento entre obras) e dados novos. 15 têm uma obra selecionada e 5 são gerais. O plano inicial era de 30; o conjunto foi reduzido por prazo, mantendo todos os grupos. Os números do gabarito são calculados por SQL em [scripts/calcular_gabarito.py](../scripts/calcular_gabarito.py), e um teste confere que batem com os dados.
+
+Com 20 perguntas, cada uma vale 5 pontos percentuais, por isso os resultados são reportados em contagens ("17 de 20"), por grupo, e não em porcentagens.
+
 ### Conjunto reservado
 
-Das 30 perguntas, 6 são **reservadas**: escolhidas antes do baseline, cobrindo grupos diferentes, e com o resultado pergunta a pergunta fechado até a medição final. Elas entram nas duas medições oficiais (antes e depois), mas não são usadas para depurar o assistente durante as etapas de melhoria.
+Das 20 perguntas, 4 são **reservadas** (Q7, Q12, Q14 e Q17, uma por grupo principal): escolhidas antes do baseline e com o resultado pergunta a pergunta fechado até a medição final. Elas entram nas duas medições oficiais (antes e depois), mas não são usadas para depurar o assistente durante as etapas de melhoria.
 
-O objetivo é detectar sobreajuste: se o acerto subir nas 24 perguntas visíveis e não nas 6 reservadas, a melhora provavelmente veio de ajustes feitos para o conjunto de avaliação, e não de um assistente melhor. Com só 6 perguntas, a comparação é um sinal, não uma prova estatística.
+O objetivo é detectar sobreajuste: se o acerto subir nas 16 perguntas visíveis e não nas 4 reservadas, a melhora provavelmente veio de ajustes feitos para o conjunto de avaliação, e não de um assistente melhor. Com só 4 perguntas, a comparação é um sinal, não uma prova estatística.
 
 ## Limitações
 
 - **Dados sintéticos escritos pelo autor.** A mesma pessoa escreveu os eventos, as perguntas e as melhorias do assistente. Isso cria risco de sobreajuste ao conjunto de avaliação. As proteções adotadas: perguntas e gabarito congelados antes de mexer no assistente (tag `baseline`); melhorias por técnicas gerais (ferramentas SQL, busca por tema, saída validada), sem regras para estas obras; perguntas na voz do usuário, com paráfrases, erros de digitação e premissas erradas; um grupo que cria e apaga diários durante o teste; e o conjunto reservado.
+- **Conjunto pequeno.** 20 perguntas, 1 rodada por medição (nível gratuito da API). Diferenças de 1 ou 2 perguntas entre o antes e o depois podem ser variação do modelo, não melhora real.
+- **Injeção de prompt só direta.** O conjunto testa um usuário tentando manipular o assistente, mas não um texto malicioso escondido numa observação de diário (injeção indireta).
 - **Sem usuários reais.** As perguntas imitam um engenheiro de obra, mas não vieram de um. O conjunto não mostra como o assistente se sai com o vocabulário, os erros e as necessidades de usuários reais.
 - **Avaliação não é garantia.** Ela dá evidência de que o assistente acerta em dados representativos; a segurança em uso real depende também das proteções em tempo de execução (saída validada, obra aplicada pelo servidor, recusa fora do escopo) e do monitoramento em produção.
 
