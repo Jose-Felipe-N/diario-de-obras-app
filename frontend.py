@@ -60,6 +60,11 @@ ROTULO_LOCAL = {
     "Exterior": "Exterior (Céu Aberto)",
 }
 
+
+def reais(valor):
+    """Formata no padrão brasileiro: 1234.5 -> 'R$ 1.234,50'."""
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
 import streamlit.components.v1 as components
 
 def scroll_to_diario():
@@ -764,8 +769,8 @@ elif menu_selecionado == "Orçamentos":
                 custo_mat = st.number_input("Custo de Materiais (R$)", min_value=0.0, step=100.0, format="%.2f", value=None, placeholder="Digite o valor...")
                 custo_mao = st.number_input("Custo de Mão de Obra (R$)", min_value=0.0, step=100.0, format="%.2f", value=None, placeholder="Digite o valor...")
 
-                st.markdown("##### 📈 Margem")
-                lucro_pct = st.number_input("Margem de Lucro / BDI (%)", min_value=0.0, step=1.0, format="%.1f", value=None, placeholder="Ex: 20.0", help="Porcentagem de lucro aplicada sobre a soma dos custos.")
+                st.markdown("##### 📈 Lucro")
+                lucro_pct = st.number_input("Markup sobre o custo (%)", min_value=0.0, step=1.0, format="%.1f", value=None, placeholder="Ex: 20.0", help="Porcentagem aplicada sobre a soma de materiais e mão de obra. O lucro é gravado em reais.")
 
                 btn_salvar_orc = st.form_submit_button("💾 Gerar Orçamento", use_container_width=True)
 
@@ -773,18 +778,18 @@ elif menu_selecionado == "Orçamentos":
                     if input_cliente and input_projeto:
                         val_mat = custo_mat if custo_mat is not None else 0.0
                         val_mao = custo_mao if custo_mao is not None else 0.0
-                        val_lucro = lucro_pct if lucro_pct is not None else 0.0
-                        
+                        val_markup = lucro_pct if lucro_pct is not None else 0.0
+
+                        # A API recebe o lucro em reais e calcula o valor total.
                         subtotal = val_mat + val_mao
-                        valor_final = subtotal * (1 + (val_lucro / 100))
-                        
+                        lucro_reais = round(subtotal * val_markup / 100, 2)
+
                         pacote_orcamento = {
                             "cliente": input_cliente,
                             "nome_projeto": input_projeto,
-                            "custo_material": val_mat,        
-                            "custo_mao_de_obra": val_mao, 
-                            "lucro": val_lucro,               
-                            "valor_total": valor_final
+                            "custo_material": val_mat,
+                            "custo_mao_de_obra": val_mao,
+                            "lucro": lucro_reais,
                         }
                         
                         try:
@@ -833,24 +838,24 @@ elif menu_selecionado == "Orçamentos":
                         st.markdown(f"#### {orc['nome_projeto']}")
                         st.caption(f"👤 Cliente: **{orc['cliente']}**")
                         
-                        val_mat_fmt = f"R$ {orc.get('custo_material', 0):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                        val_mao_fmt = f"R$ {orc.get('custo_mao_de_obra', 0):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                        valor_total_fmt = f"R$ {orc.get('valor_total', 0):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                        lucro_pct = orc.get('lucro', 0)
-                        
+                        custo = orc.get('custo_material', 0) + orc.get('custo_mao_de_obra', 0)
+                        lucro = orc.get('lucro', 0)
+                        markup = lucro / custo * 100 if custo else 0.0
+
                         st.markdown(f"""
                             <div style="font-size:14px; margin-bottom: 8px;">
-                                🧱 <b>Materiais:</b> <code>{val_mat_fmt}</code><br>
-                                👷 <b>Mão de Obra:</b> <code>{val_mao_fmt}</code>
+                                🧱 <b>Materiais:</b> <code>{reais(orc.get('custo_material', 0))}</code><br>
+                                👷 <b>Mão de Obra:</b> <code>{reais(orc.get('custo_mao_de_obra', 0))}</code><br>
+                                📈 <b>Lucro:</b> <code>{reais(lucro)}</code> (markup de {markup:.1f}% sobre o custo)
                             </div>
                         """, unsafe_allow_html=True)
-                        
-                        st.write(f"💰 **Valor Total:** `{valor_total_fmt}` *(Margem: {lucro_pct}%)*")
+
+                        st.write(f"💰 **Valor Total:** `{reais(orc.get('valor_total', 0))}`")
                         
                     with col_status:
                         cor_status = "blue"
                         if orc['status'] == "Aprovado": cor_status = "green"
-                        elif orc['status'] == "Obra Negada": cor_status = "red"
+                        elif orc['status'] == "Recusado": cor_status = "red"
                         elif orc['status'] == "Convertido em Obra": cor_status = "orange"
                         
                         st.markdown(f"Status:<br>:{cor_status}[**{orc['status']}**]", unsafe_allow_html=True)
@@ -860,8 +865,8 @@ elif menu_selecionado == "Orçamentos":
                                 requests.put(f"http://127.0.0.1:8000/orcamentos/{orc['id']}/status", json={"status": "Aprovado"})
                                 st.rerun()
                                 
-                            if st.button("❌ Negar", key=f"negar_{orc['id']}", use_container_width=True):
-                                requests.put(f"http://127.0.0.1:8000/orcamentos/{orc['id']}/status", json={"status": "Obra Negada"})
+                            if st.button("❌ Recusar", key=f"negar_{orc['id']}", use_container_width=True):
+                                requests.put(f"http://127.0.0.1:8000/orcamentos/{orc['id']}/status", json={"status": "Recusado"})
                                 st.rerun()
                                 
                         elif orc['status'] == "Aprovado":

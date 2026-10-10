@@ -41,7 +41,7 @@ def test_diario_recusa_local_fora_do_padrao(cliente, local):
 def test_converter_orcamento_usa_ambiente_padronizado(cliente):
     orcamento = cliente.post("/orcamentos/", json={
         "cliente": "Cliente", "nome_projeto": "Projeto", "custo_material": 1000.0,
-        "custo_mao_de_obra": 500.0, "lucro": 300.0, "valor_total": 1800.0,
+        "custo_mao_de_obra": 500.0, "lucro": 300.0,
     }).json()
     rota = f"/orcamentos/{orcamento['id']}/converter"
     dados = {"endereco": "Rua A, 1", "data_inicio": "2026-10-05"}

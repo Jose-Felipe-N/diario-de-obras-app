@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models, schemas
-from database import SessionLocal, get_db
-from pydantic import BaseModel
-from fastapi import HTTPException
-from datetime import date
+from database import get_db
 
 router = APIRouter()
 
 @router.post("/orcamentos/", response_model=schemas.OrcamentoResponse)
 def criar_orcamento(orcamento: schemas.OrcamentoCreate, db: Session = Depends(get_db)):
-    novo_orcamento = models.orcamento(**orcamento.model_dump())
+    dados = orcamento.model_dump()
+    # O total é sempre calculado aqui, para a conta nunca depender do que o cliente envia.
+    dados["valor_total"] = round(dados["custo_material"] + dados["custo_mao_de_obra"] + dados["lucro"], 2)
+    novo_orcamento = models.orcamento(**dados)
 
     db.add(novo_orcamento)
     db.commit()
@@ -22,16 +22,16 @@ def criar_orcamento(orcamento: schemas.OrcamentoCreate, db: Session = Depends(ge
 def listar_orcamentos(db: Session = Depends(get_db)):
     return db.query(models.orcamento).all()
 
-class StatusUpdate(BaseModel):
-    status: str
-
 @router.put("/orcamentos/{orcamento_id}/status")
-def atualizar_status_orcamento(orcamento_id: int, atualizacao: StatusUpdate, db: Session = Depends(get_db)):
+def atualizar_status_orcamento(orcamento_id: int, atualizacao: schemas.StatusOrcamentoUpdate, db: Session = Depends(get_db)):
     orcamento = db.query(models.orcamento).filter(models.orcamento.id == orcamento_id).first()
     
     if not orcamento:
         raise HTTPException(status_code=404, detail="Orçamento não encontrado")
-        
+
+    if orcamento.status == "Convertido em Obra":
+        raise HTTPException(status_code=400, detail="Este orçamento já virou obra e não pode mudar de status.")
+
     orcamento.status = atualizacao.status
     db.commit()
     

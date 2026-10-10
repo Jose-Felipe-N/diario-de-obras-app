@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date
 from typing import Optional, List, Literal
 
@@ -110,20 +110,32 @@ class ObraResponse(ObraCreate):
 
 # ── Orçamentos ──────────────────────────────────────────────────────────────────
 
+StatusOrcamento = Literal["Em análise", "Aprovado", "Recusado", "Convertido em Obra"]
+# "Convertido em Obra" só é definido pelo /converter, junto com a criação da obra.
+StatusOrcamentoManual = Literal["Em análise", "Aprovado", "Recusado"]
+
+
 class OrcamentoCreate(BaseModel):
     cliente: str
     nome_projeto: str
-    custo_material: float
-    custo_mao_de_obra: float
-    lucro: float
-    valor_total: float
+    custo_material: float = Field(ge=0)
+    custo_mao_de_obra: float = Field(ge=0)
+    # Lucro em reais. A tela recebe a porcentagem de markup sobre o custo e converte.
+    # O valor_total não é recebido: o servidor calcula material + mão de obra + lucro.
+    lucro: float = Field(ge=0)
+
 
 class OrcamentoResponse(OrcamentoCreate):
     id: int
-    status: str
+    valor_total: float
+    status: StatusOrcamento
 
     class Config:
         from_attributes = True
+
+
+class StatusOrcamentoUpdate(BaseModel):
+    status: StatusOrcamentoManual
 
 class DadosConversao(BaseModel):
     endereco: str
