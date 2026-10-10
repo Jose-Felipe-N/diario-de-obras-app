@@ -16,6 +16,16 @@ def get_db():
         db.close()
 
 
+CLIMA_RUIM = ("Chuva", "Tempestade")
+
+
+def exposto_ao_clima(diario):
+    """O clima só interfere no trabalho feito ao ar livre."""
+    if diario.local_dia:
+        return diario.local_dia == "Exterior"
+    return diario.obra.ambiente != "Fechado"
+
+
 @router.get("/")
 def obter_dashboard(db: Session = Depends(get_db)):
     hoje = date.today()
@@ -42,7 +52,8 @@ def obter_dashboard(db: Session = Depends(get_db)):
 
     for diario in diarios_hoje:
         diarios_preenchidos.append({"obra": diario.obra.nome})
-        if diario.clima_manha in ["Chuva", "Tempestade"] or diario.clima_tarde in ["Chuva", "Tempestade"]:
+        clima_ruim = diario.clima_manha in CLIMA_RUIM or diario.clima_tarde in CLIMA_RUIM
+        if clima_ruim and exposto_ao_clima(diario):
             alertas_clima.append({
                 "obra": diario.obra.nome,
                 "clima": f"Manhã: {diario.clima_manha}, Tarde: {diario.clima_tarde}"
