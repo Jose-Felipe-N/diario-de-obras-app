@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Text, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Date, Text, ForeignKey, Float, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 
 #Base que todas tabelas vão herdar
@@ -15,6 +15,7 @@ class Obra(Base):
     ambiente = Column(String, default="Aberto")
 
     diarios = relationship("DiarioDeObra", back_populates="obra")
+    etapas = relationship("EtapaObra", back_populates="obra", cascade="all, delete-orphan")
 
 class DiarioDeObra(Base):
     __tablename__ = "diarios_de_obra"
@@ -77,4 +78,19 @@ class orcamento(Base):
     valor_total = Column(Float, default=0.0)
 
     status = Column(String, default="Em análise")
+
+class EtapaObra(Base):
+    __tablename__ = "etapas_obra"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome_etapa = Column(String)          
+    peso_percentual = Column(Float)      
     
+    dias_estimados = Column(Integer)
+    data_inicio_real = Column(Date, nullable=True)
+    data_fim_real = Column(Date, nullable=True)  
+    
+    concluida = Column(Boolean, default=False)
+
+    obra_id = Column(Integer, ForeignKey("obras.id"))
+    obra = relationship("Obra", back_populates="etapas")

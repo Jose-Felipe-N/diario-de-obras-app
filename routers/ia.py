@@ -9,6 +9,7 @@ from google.genai import types
 from database import get_db
 import models 
 import schemas
+from datetime import date
 
 load_dotenv()
 cliente_ia = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -46,7 +47,30 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
         
         total_gasto = 0
         hist_detalhado = []
-        
+
+        etapas = db.query(models.EtapaObra).filter(models.EtapaObra.obra_id == obra.id).all()
+        progresso_fisico = 0.0
+        etapas_info = []
+
+
+        for etapa in etapas:
+            status_tempo = "Sem dados de início"
+            
+            if etapa.data_inicio_real:
+                data_fim_calc = etapa.data_fim_real if etapa.data_fim_real else date.today()
+                dias_decorridos = (data_fim_calc - etapa.data_inicio_real).days
+                
+                if dias_decorridos > (etapa.dias_estimados or 0):
+                    status_tempo = f"ATRASADA ({dias_decorridos} dias decorridos de {etapa.dias_estimados} estimados)"
+                else:
+                    status_tempo = f"NO PRAZO ({dias_decorridos} dias decorridos de {etapa.dias_estimados} estimados)"
+
+            if etapa.concluida:
+                progresso_fisico += etapa.peso_percentual
+                etapas_info.append(f"[CONCLUÍDA] {etapa.nome_etapa} | Peso: {etapa.peso_percentual}% | Prazo: {status_tempo}")
+            else:
+                etapas_info.append(f"[PENDENTE] {etapa.nome_etapa} | Peso: {etapa.peso_percentual}% | Prazo: {status_tempo}")
+
         for diario in diarios:
             data_str = diario.data.strftime("%d/%m/%Y") if hasattr(diario.data, 'strftime') else str(diario.data)
             
@@ -80,6 +104,8 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
         - Ambiente: {obra.ambiente} | Status: {obra.status} | Início: {obra.data_inicio}
         - Endereço: {obra.endereco}
         - Financeiro: R$ {total_gasto:.2f} acumulados em {len(diarios)} diários.
+        - PROGRESSO FÍSICO ATUAL: {progresso_fisico:.1f}%
+        - Cronograma das Etapas (Previsto x Realizado): {', '.join(etapas_info) if etapas_info else 'Nenhuma etapa registrada'}
         - Histórico de Atividades: {json.dumps(hist_detalhado)}
         """
         dados_obras.append(resumo_obra)

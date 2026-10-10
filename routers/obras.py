@@ -15,17 +15,29 @@ def get_db():
 
 
 @router.post("/")
-def criar_obra(obra_recebida: schemas.ObraCreate, db: Session = Depends(get_db)):
+def criar_obra(obra: schemas.ObraCreate, db: Session = Depends(get_db)):
     nova_obra = models.Obra(
-        nome=obra_recebida.nome,
-        endereco=obra_recebida.endereco,
-        data_inicio=obra_recebida.data_inicio,
-        status=obra_recebida.status,
-        ambiente=obra_recebida.ambiente
+        nome=obra.nome,
+        endereco=obra.endereco,
+        data_inicio=obra.data_inicio,
+        status=obra.status,
+        ambiente=obra.ambiente
     )
     db.add(nova_obra)
     db.commit()
-    db.refresh(nova_obra)
+    db.refresh(nova_obra) 
+
+    if obra.etapas:
+        for etapa_in in obra.etapas:
+            nova_etapa = models.EtapaObra(
+                nome_etapa=etapa_in.nome_etapa,
+                peso_percentual=etapa_in.peso_percentual,
+                dias_estimados=etapa_in.dias_estimados,
+                obra_id=nova_obra.id # Amarra a etapa na obra!
+            )
+            db.add(nova_etapa)
+        db.commit()
+
     return nova_obra
 
 
@@ -60,3 +72,12 @@ def atualizar_status_obra(obra_id: int, dados: schemas.StatusUpdate, db: Session
     obra.status = dados.status
     db.commit()
     return {"mensagem": "Status atualizado com sucesso"}
+
+
+@router.get("/{obra_id}/progresso")
+def obter_progresso_obra(obra_id: int, db: Session = Depends(get_db)):
+    etapas = db.query(models.EtapaObra).filter(models.EtapaObra.obra_id == obra_id).all()
+    
+    progresso_total = sum(etapa.peso_percentual for etapa in etapas if etapa.concluida)
+            
+    return {"progresso": progresso_total}

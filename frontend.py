@@ -201,8 +201,23 @@ elif menu_selecionado == "Painel de Obras":
 
                         st.markdown("<br>", unsafe_allow_html=True)
 
+                        try:
+                            res_progresso = requests.get(f"http://127.0.0.1:8000/obras/{obra['id']}/progresso")
+                            valor_progresso = res_progresso.json().get("progresso", 0.0) if res_progresso.status_code == 200 else 0.0
+                        except:
+                            valor_progresso = 0.0
+
+                        valor_barra = int(valor_progresso)
+                        if valor_barra > 100: 
+                            valor_barra = 100 
+
+                        st.markdown("### 📈 Andamento do Projeto")
+                        st.progress(valor_barra, text=f"Progresso Físico Realizado: {valor_progresso:.1f}%")
+                        st.divider()
+
                         if not obra['diarios']:
                             st.info("Nenhum diário registrado para esta obra.")
+                        
 
                         if "diario_aberto" not in st.session_state:
                             st.session_state["diario_aberto"] = None
@@ -324,29 +339,68 @@ elif menu_selecionado == "Painel de Obras":
 elif menu_selecionado == "Nova Obra":
     st.title("➕ Cadastrar Nova Obra")
     st.write("Preencha os dados abaixo para iniciar um novo projeto.")
+    
     with st.form("form_nova_obra", clear_on_submit=True):
         input_nome = st.text_input("Nome da Obra")
         input_endereco = st.text_input("Endereço Completo")
+        
         col1, col2 = st.columns(2)
         with col1:
             input_data = st.date_input("Data de Início")
         with col2:
             input_status = st.selectbox("Status Atual", ["Planejamento", "Em andamento", "Pausada", "Concluída"])
+            
         st.markdown("**Condições do Local:**")
         input_ambiente = st.radio(
             "Selecione o tipo de ambiente da obra:",
             ["Aberto (Sujeito ao clima)", "Fechado (Coberto)", "Misto (Aberto e Fechado)"],
             horizontal=True
         )
+
+        st.markdown("---")
+        st.markdown("### 📋 Planejamento de Etapas e Cronograma (Opcional)")
+        st.caption("Clique no botão '+' no canto direito da tabela para adicionar as linhas das etapas.")
+        
+        df_etapas_vazio = pd.DataFrame(columns=["Nome da Etapa", "Peso (%)", "Dias Estimados"])
+        
+        etapas_preenchidas = st.data_editor(
+            df_etapas_vazio,
+            num_rows="dynamic",
+            use_container_width=True,
+            hide_index=True,
+            key="cadastro_etapas_obra"
+        )
+
         btn_salvar = st.form_submit_button("💾 Salvar Obra")
+        
         if btn_salvar:
-            pacote_dados = {"nome": input_nome, "endereco": input_endereco, "data_inicio": str(input_data), "status": input_status, "ambiente": input_ambiente}
+            etapas_lista = []
+            if etapas_preenchidas is not None and not etapas_preenchidas.empty:
+                for index, row in etapas_preenchidas.iterrows():
+                    # Evita processar linhas totalmente vazias ou sem nome
+                    if pd.notna(row["Nome da Etapa"]) and str(row["Nome da Etapa"]).strip() != "":
+                        etapas_lista.append({
+                            "nome_etapa": str(row["Nome da Etapa"]),
+                            "peso_percentual": float(row["Peso (%)"]) if pd.notna(row["Peso (%)"]) else 0.0,
+                            "dias_estimados": int(row["Dias Estimados"]) if pd.notna(row["Dias Estimados"]) else 0
+                        })
+
+            pacote_dados = {
+                "nome": input_nome, 
+                "endereco": input_endereco, 
+                "data_inicio": str(input_data), 
+                "status": input_status, 
+                "ambiente": input_ambiente,
+                "etapas": etapas_lista
+            }
+            
             try:
                 resposta_post = requests.post(URL_OBRAS, json=pacote_dados)
                 if resposta_post.status_code == 200:
-                    st.success(f"✨ A obra '{input_nome}' foi criada com sucesso!")
+                    st.success(f"✨ A obra '{input_nome}' e seu cronograma foram criados com sucesso!")
+                    st.rerun()
                 else:
-                    st.error("Erro ao tentar salvar a obra. Verifique os dados.")
+                    st.error("Erro ao tentar salvar a obra. Verifique as configurações do servidor.")
             except Exception as e:
                 st.error("Erro de conexão com a API.")
 
@@ -605,7 +659,6 @@ elif menu_selecionado == "Analista IA":
                         st.error("Ops! O Analista IA encontrou um erro no banco de dados.")
                 except Exception as e:
                     st.error(f"Erro de conexão com o servidor: {e}")
-
 
 # ── CONFIGURAÇÕES ──────────────────────────────────────────────────────────────
 

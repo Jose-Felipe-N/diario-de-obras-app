@@ -1,7 +1,13 @@
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
+
+# ── Etapas ──────────────────────────────────────────────────────────────────
+class EtapaCreate(BaseModel):
+    nome_etapa: str
+    peso_percentual: float
+    dias_estimados: int
 
 # ── Obras ──────────────────────────────────────────────────────────────────────
 
@@ -11,6 +17,7 @@ class ObraCreate(BaseModel):
     data_inicio: Optional[date] = None
     status: Optional[str] = "Em andamento"
     ambiente: Optional[str] = "Aberto"
+    etapas: List[EtapaCreate] = []
 
 
 class StatusUpdate(BaseModel):
