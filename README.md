@@ -78,7 +78,7 @@ As demais variáveis do `.env.example` são opcionais (modelo do Gemini, arquivo
 ```bash
 python seed.py
 ```
-⚠️ O seed **apaga e recria** o banco antes de gerar obras, etapas, diários e orçamentos de exemplo.
+Carrega os dados de avaliação da pasta `dados/`: 3 obras, 189 diários e 6 orçamentos, com datas de junho a outubro de 2026. ⚠️ O seed **apaga e recria** o banco; se ele já tiver obras, pede confirmação antes (use `--sim` para não perguntar). Para carregar em outro arquivo sem tocar no seu banco, defina `DIARIO_DB_PATH`.
 
 ### 6. Inicie o backend
 ```bash
@@ -113,7 +113,7 @@ Os testes usam um banco em memória e um contador de cota temporário: não alte
 ├── cota.py              # Contador da cota diária do Gemini
 ├── frontend.py          # Interface Streamlit
 ├── opcoes_tela.py       # Regras das listas editáveis da tela
-├── seed.py              # Dados fictícios para desenvolvimento
+├── seed.py              # Carrega os dados fictícios no banco
 ├── requirements.txt
 ├── .env.example
 ├── 📁 routers/

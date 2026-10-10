@@ -77,7 +77,7 @@ The other variables in `.env.example` are optional (Gemini model, database file,
 ```bash
 python seed.py
 ```
-⚠️ The seed **drops and recreates** the database before generating sample sites, stages, logs, and budgets.
+Loads the evaluation data from the `dados/` folder: 3 sites, 189 daily logs and 6 budgets, dated June to October 2026. ⚠️ The seed **drops and recreates** the database; if it already has sites, it asks for confirmation first (use `--sim` to skip the question). To load into another file without touching your database, set `DIARIO_DB_PATH`.
 
 ### 6. Start the backend
 ```bash
@@ -112,7 +112,7 @@ The tests use an in-memory database and a temporary quota counter: they don't ch
 ├── cota.py              # Gemini daily quota counter
 ├── frontend.py          # Streamlit interface
 ├── opcoes_tela.py       # Rules for the editable lists in the UI
-├── seed.py              # Sample data for development
+├── seed.py              # Loads the sample data into the database
 ├── requirements.txt
 ├── .env.example
 ├── 📁 routers/
