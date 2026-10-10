@@ -82,6 +82,7 @@ def popular_banco_completo():
     obras_criadas = [(obra1, 45), (obra2, 50), (obra3, 120)] # Obra e quantidade de dias trabalhados
     climas = ["Sol", "Sol", "Sol", "Nublado", "Chuva", "Tempestade"]
     funcoes = ["Pedreiro", "Servente", "Soldador", "Engenheiro"]
+    local_por_ambiente = {"Aberto": "Exterior", "Fechado": "Interior", "Misto": "Exterior"}
     
     for obra, dias_totais in obras_criadas:
         print(f"🏗️ Gerando diários para a {obra.nome}...")
@@ -107,7 +108,7 @@ def popular_banco_completo():
                 clima_manha=clima_m,
                 clima_tarde=clima_t,
                 observacoes_gerais=obs,
-                local_dia="Frente da Obra",
+                local_dia=local_por_ambiente[obra.ambiente],
                 obra_id=obra.id
             )
             db.add(diario)

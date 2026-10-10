@@ -49,6 +49,17 @@ CLIMA_ICONE = {
     "Tempestade": "⛈️",
 }
 
+# A API grava os valores curtos (chaves); a tela mostra os rótulos.
+ROTULO_AMBIENTE = {
+    "Aberto": "Aberto (Sujeito ao clima)",
+    "Fechado": "Fechado (Coberto)",
+    "Misto": "Misto (Aberto e Fechado)",
+}
+ROTULO_LOCAL = {
+    "Interior": "Interior (Coberto)",
+    "Exterior": "Exterior (Céu Aberto)",
+}
+
 import streamlit.components.v1 as components
 
 def scroll_to_diario():
@@ -180,7 +191,7 @@ elif menu_selecionado == "Painel de Obras":
                                     st.rerun()
 
                         st.write(f"**Endereço:** {obra['endereco']}")
-                        st.write(f"**Ambiente:** {obra.get('ambiente', 'Não informado')}")
+                        st.write(f"**Ambiente:** {ROTULO_AMBIENTE.get(obra.get('ambiente'), 'Não informado')}")
 
                         col_status, col_btn = st.columns([3, 1])
                         with col_status:
@@ -352,7 +363,8 @@ elif menu_selecionado == "Nova Obra":
         st.markdown("**Condições do Local:**")
         input_ambiente = st.radio(
             "Selecione o tipo de ambiente da obra:",
-            ["Aberto (Sujeito ao clima)", "Fechado (Coberto)", "Misto (Aberto e Fechado)"],
+            list(ROTULO_AMBIENTE),
+            format_func=ROTULO_AMBIENTE.get,
             horizontal=True
         )
 
@@ -479,14 +491,14 @@ elif menu_selecionado == "Novo Diário":
 
                 local_dia = None
                 ambiente_obra = obra_selecionada.get("ambiente")
-                if ambiente_obra == "Misto (Aberto e Fechado)":
+                if ambiente_obra == "Misto":
                     st.markdown("### 📍 Localização do Trabalho")
-                    local_dia = st.radio("Onde a maior parte do trabalho foi realizada hoje?", ["Interior (Coberto)", "Exterior (Céu Aberto)"], horizontal=True)
-                elif ambiente_obra == "Fechado (Coberto)":
-                    local_dia = "Interior (Coberto)"
+                    local_dia = st.radio("Onde a maior parte do trabalho foi realizada hoje?", list(ROTULO_LOCAL), format_func=ROTULO_LOCAL.get, horizontal=True)
+                elif ambiente_obra == "Fechado":
+                    local_dia = "Interior"
                     st.info("ℹ️ Obra em ambiente fechado. Localização definida automaticamente como Interior.")
                 else:
-                    local_dia = "Exterior (Céu Aberto)"
+                    local_dia = "Exterior"
                     st.info("ℹ️ Obra em ambiente aberto. Localização definida automaticamente como Exterior.")
 
                 observacoes = st.text_area("Observações Gerais")
@@ -863,7 +875,8 @@ elif menu_selecionado == "Orçamentos":
                                 with col_pop1:
                                     amb_obra = st.selectbox(
                                         "Ambiente",
-                                        ["Aberto (Sujeito ao clima)", "Fechado (Coberto)", "Misto"],
+                                        list(ROTULO_AMBIENTE),
+                                        format_func=ROTULO_AMBIENTE.get,
                                         key=f"amb_{orc['id']}"
                                     )
                                 with col_pop2:

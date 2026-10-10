@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional, List
+from typing import Optional, List, Literal
+
+# Valores aceitos pela API. A tela exibe rótulos longos ("Fechado (Coberto)"),
+# mas grava só estes; qualquer outro valor é recusado com 422.
+Ambiente = Literal["Aberto", "Fechado", "Misto"]
+LocalDia = Literal["Interior", "Exterior"]
 
 
 # ── Etapas ──────────────────────────────────────────────────────────────────
@@ -16,7 +21,7 @@ class ObraCreate(BaseModel):
     endereco: Optional[str] = None
     data_inicio: Optional[date] = None
     status: Optional[str] = "Em andamento"
-    ambiente: Optional[str] = "Aberto"
+    ambiente: Ambiente = "Aberto"
     etapas: List[EtapaCreate] = []
 
 
@@ -31,7 +36,7 @@ class DiarioCreate(BaseModel):
     clima_manha: Optional[str] = None
     clima_tarde: Optional[str] = None
     observacoes_gerais: Optional[str] = None
-    local_dia: Optional[str] = None
+    local_dia: Optional[LocalDia] = None
     obra_id: int
 
 
@@ -122,7 +127,7 @@ class OrcamentoResponse(OrcamentoCreate):
 
 class DadosConversao(BaseModel):
     endereco: str
-    ambiente: str
+    ambiente: Ambiente
     data_inicio: date
 
 # ── Analista de IA ──────────────────────────────────────────────────────────────────
