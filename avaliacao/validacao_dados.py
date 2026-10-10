@@ -71,8 +71,17 @@ TEMAS_DE_EVENTO = re.compile(
     r"|roub\w*|furt\w*|greve|esquec\w*|err\w*|concessionari\w*|locadora|perdid\w*|nao cheg\w*)")
 
 
+ARQUIVOS = ["eventos.json", "catalogo.json", "esqueleto.json", "observacoes_rotina.json"]
+# Produzidos pelo gerador e pela escrita da rotina; os outros dois existem sempre.
+ARQUIVOS_GERADOS = {"esqueleto.json", "observacoes_rotina.json"}
+
+
 class DadosAusentes(Exception):
-    """Algum arquivo de dados não existe ou não pôde ser lido."""
+    """Algum arquivo de dados não existe."""
+
+    def __init__(self, pasta, faltando):
+        self.faltando = faltando
+        super().__init__(f"arquivos ausentes em {pasta}: {', '.join(faltando)}")
 
 
 @dataclass
@@ -116,11 +125,10 @@ def ler_json(caminho):
 
 def carregar(pasta=None):
     pasta = Path(pasta or os.environ.get("DADOS_AVALIACAO_DIR") or RAIZ / "dados")
-    nomes = ["eventos.json", "catalogo.json", "esqueleto.json", "observacoes_rotina.json"]
-    faltando = [n for n in nomes if not (pasta / n).is_file()]
+    faltando = [n for n in ARQUIVOS if not (pasta / n).is_file()]
     if faltando:
-        raise DadosAusentes(f"arquivos ausentes em {pasta}: {', '.join(faltando)}")
-    eventos, catalogo, esqueleto, rotina = (ler_json(pasta / n) for n in nomes)
+        raise DadosAusentes(pasta, faltando)
+    eventos, catalogo, esqueleto, rotina = (ler_json(pasta / n) for n in ARQUIVOS)
     return Dados(eventos=eventos, catalogo=catalogo, esqueleto=esqueleto, rotina=rotina)
 
 

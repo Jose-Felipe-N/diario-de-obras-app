@@ -15,6 +15,8 @@ def dados():
     try:
         return v.carregar()
     except v.DadosAusentes as erro:
+        if set(erro.faltando) <= v.ARQUIVOS_GERADOS:
+            pytest.skip(f"dados ainda não gerados ({', '.join(erro.faltando)}); rode scripts/gerar_esqueleto.py")
         pytest.fail(str(erro), pytrace=False)
 
 
