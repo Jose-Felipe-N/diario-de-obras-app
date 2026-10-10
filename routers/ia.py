@@ -2,15 +2,13 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import json
 from datetime import datetime
-from google import genai
 from google.genai import types
 import config
+import gemini
 from database import get_db
 import models
 import schemas
 from datetime import date
-
-cliente_ia = genai.Client(api_key=config.GEMINI_API_KEY)
 
 router = APIRouter(prefix="/ia", tags=["Analista IA"])
 
@@ -148,11 +146,13 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
     """
 
     try:
-        resposta = cliente_ia.models.generate_content(
-            model=config.GEMINI_MODEL,
-            contents=prompt_sistema,
-            config=types.GenerateContentConfig(response_mime_type="application/json"),
+        resposta = gemini.gerar(
+            config.GEMINI_MODEL,
+            prompt_sistema,
+            types.GenerateContentConfig(response_mime_type="application/json"),
         )
         return json.loads(resposta.text)
+    except gemini.CotaEsgotada as e:
+        return {"resposta": str(e), "gerar_grafico": False}
     except Exception as e:
         return {"resposta": f"Erro técnico: {str(e)}", "gerar_grafico": False}

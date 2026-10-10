@@ -25,3 +25,7 @@ DIARIO_DB_PATH = RAIZ / os.getenv("DIARIO_DB_PATH", "diario_obra.db")
 
 # Endereço da API chamado pelo frontend.
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
+
+# Arquivo do contador de cota do Gemini. Fica fora do projeto para ser o mesmo
+# em todas as cópias (a pasta principal e o worktree do baseline).
+COTA_GEMINI_ARQUIVO = Path(os.getenv("COTA_GEMINI_ARQUIVO", Path.home() / ".diario_obras" / "cota_gemini.json"))

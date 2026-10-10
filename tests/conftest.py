@@ -6,9 +6,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import config
 import database
 import models
 from main import app
+
+
+@pytest.fixture(autouse=True)
+def cota_isolada(tmp_path, monkeypatch):
+    """Nenhum teste lê ou grava o contador de cota real."""
+    monkeypatch.setattr(config, "COTA_GEMINI_ARQUIVO", tmp_path / "cota_gemini.json")
 
 
 @pytest.fixture
