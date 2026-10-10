@@ -15,10 +15,12 @@ Gerenciar múltiplas obras ao mesmo tempo envolve controlar trabalhadores, equip
 
 ## ✨ Funcionalidades
 
-- **Cadastro de Obras** — registre obras com endereço, ambiente e status
-- **Diário de Campo** — registre clima, observações, trabalhadores, equipamentos e gastos por dia
-- **Painel de Controle** — visão geral do dia com efetivo total, gastos e alertas climáticos
-- **Analista IA** — assistente inteligente focado em obras; selecione uma obra específica para consultas precisas e econômicas
+- **Cadastro de Obras** — registre obras com endereço, ambiente (aberto, fechado ou misto), status e etapas do cronograma
+- **Etapas e progresso físico** — cada etapa tem peso e prazo estimado; o painel mostra o progresso da obra
+- **Diário de Campo** — registre clima, local de trabalho (interior ou exterior), observações, trabalhadores, equipamentos e gastos por dia
+- **Orçamentos** — custos de material e mão de obra com lucro por markup sobre o custo; um orçamento aprovado pode virar obra
+- **Painel de Controle** — visão geral do dia com efetivo total, gastos e alertas de clima para o trabalho feito ao ar livre
+- **Analista IA** — assistente focado em obras; selecione uma obra específica para consultas precisas e econômicas
 - **Configurações** — gerencie as categorias de funções, equipamentos e gastos
 
 ---
@@ -28,19 +30,22 @@ Gerenciar múltiplas obras ao mesmo tempo envolve controlar trabalhadores, equip
 | Camada | Tecnologia |
 |---|---|
 | Backend | FastAPI + SQLAlchemy |
-| Banco de dados | SQLite (dev) / PostgreSQL (prod) |
+| Banco de dados | SQLite (PostgreSQL está no roadmap) |
 | Frontend | Streamlit |
 | IA | Google Gemini (`google-genai`) |
+| Testes | pytest |
 | Versionamento | Git + GitHub |
 
 ---
 
 ## 🚀 Como rodar localmente
 
+Requer Python 3.10 ou mais recente.
+
 ### 1. Clone o repositório
 ```bash
-git clone https://github.com/Jose-Felipe-N/diario-de-obras.git
-cd diario-de-obras
+git clone https://github.com/Jose-Felipe-N/diario-de-obras-app.git
+cd diario-de-obras-app
 ```
 
 ### 2. Crie e ative o ambiente virtual
@@ -67,12 +72,13 @@ Edite o `.env` e preencha sua chave da API do Gemini:
 ```
 GEMINI_API_KEY=sua_chave_aqui
 ```
+As demais variáveis do `.env.example` são opcionais (modelo do Gemini, arquivo do banco, endereço da API e arquivo do contador de cota). Uma variável definida no terminal tem prioridade sobre o `.env`.
 
 ### 5. Popule o banco com dados fictícios (opcional)
 ```bash
 python seed.py
-python seed_etapas.py
 ```
+⚠️ O seed **apaga e recria** o banco antes de gerar obras, etapas, diários e orçamentos de exemplo.
 
 ### 6. Inicie o backend
 ```bash
@@ -86,37 +92,79 @@ streamlit run frontend.py
 
 Acesse em: `http://localhost:8501`
 
+### 8. Rode os testes
+```bash
+pytest
+```
+Os testes usam um banco em memória e um contador de cota temporário: não alteram o seu banco nem chamam a API do Gemini.
+
 ---
 
 ## 📁 Estrutura do projeto
 
 ```
-📁 diario-de-obras/
+📁 diario-de-obras-app/
 ├── main.py              # Entrypoint da API
-├── database.py          # Configuração do banco de dados
+├── config.py            # Configuração lida do .env e de variáveis de ambiente
+├── database.py          # Conexão com o banco
 ├── models.py            # Modelos SQLAlchemy
-├── schemas.py           # Schemas Pydantic
+├── schemas.py           # Schemas Pydantic (validação da API)
+├── gemini.py            # Ponto único de chamada ao Gemini
+├── cota.py              # Contador da cota diária do Gemini
 ├── frontend.py          # Interface Streamlit
-├── seed.py              # Dados fictícios de obras
-├── seed_etapas.py       # Dados fictícios de etapas
+├── opcoes_tela.py       # Regras das listas editáveis da tela
+├── seed.py              # Dados fictícios para desenvolvimento
 ├── requirements.txt
 ├── .env.example
-└── 📁 routers/
-    ├── obras.py
-    ├── diarios.py
-    ├── registros.py     # Efetivos, equipamentos e gastos
-    ├── dashboard.py
-    └── ia.py            # Endpoints do assistente IA
+├── 📁 routers/
+│   ├── obras.py
+│   ├── diarios.py
+│   ├── registros.py     # Efetivos, equipamentos e gastos
+│   ├── orcamentos.py
+│   ├── dashboard.py
+│   └── ia.py            # Endpoints do assistente IA
+├── 📁 dados/            # Catálogo único e dados de avaliação do assistente
+├── 📁 avaliacao/        # Validação dos dados de avaliação
+├── 📁 scripts/          # Migrações do banco de desenvolvimento
+├── 📁 tests/
+└── 📁 docs/
+    └── experimentos.md  # Método e resultados da avaliação do assistente
 ```
 
 ---
 
 ## 🤖 Assistente IA
 
-O assistente é alimentado pelo Google Gemini e responde **apenas perguntas relacionadas a obras e construção civil**. Para otimizar o uso de créditos da API, o usuário seleciona uma obra específica antes de iniciar a conversa — o sistema busca apenas os dados daquela obra ao montar o contexto para a IA.
+O assistente é alimentado pelo Google Gemini e responde **apenas perguntas relacionadas a obras e construção civil**. Para otimizar o uso da API, o usuário seleciona uma obra específica antes de iniciar a conversa, e o sistema busca apenas os dados daquela obra ao montar o contexto para a IA.
+
+A qualidade das respostas está sendo medida com um conjunto de perguntas e gabarito; o método e os resultados ficam em [docs/experimentos.md](docs/experimentos.md).
+
+### Cota diária do Gemini
+
+No nível gratuito, cada modelo tem um limite de requisições por dia que vale para o projeto inteiro, e o dia termina à meia-noite do horário do Pacífico (4h ou 5h de Brasília). Toda chamada passa por um contador local antes de sair; quando a cota acaba, o assistente avisa em vez de falhar.
+
+```bash
+python cota.py situacao                  # uso de hoje
+python cota.py reservar 2026-10-14       # reserva o dia para uma medição
+python cota.py ajustar 2026-10-14 gemini-3.8-flash 12 --motivo "uso no Playground"
+```
+
+O contador não enxerga chamadas feitas por outros meios no mesmo projeto (o Playground do AI Studio, por exemplo); use `ajustar` para corrigir pelo painel do AI Studio.
+
+### Uso de dados
+
+No nível gratuito da API do Gemini, o conteúdo enviado pode ser usado pelo Google para melhorar os seus produtos. Os dados deste repositório são fictícios. **Para usar o sistema com dados reais de uma construtora, use o nível pago**, em que o conteúdo não é usado para esse fim.
+
+---
+
+## ⚠️ Limitações conhecidas
+
+- **A API não tem autenticação.** Não a exponha na internet (por exemplo, com um túnel como o ngrok): qualquer pessoa poderia ler os dados e consumir a cota do Gemini.
+- **As listas editadas em Configurações vivem só na sessão do navegador**: somem quando o app reinicia e cada navegador tem a sua lista.
+- **O lançamento de um diário é feito em várias requisições** (o diário e depois cada efetivo, equipamento e gasto); se uma falhar no meio, o diário fica incompleto.
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).

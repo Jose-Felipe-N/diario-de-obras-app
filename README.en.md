@@ -14,10 +14,12 @@ Managing multiple construction sites simultaneously requires tracking workers, e
 
 ## ✨ Features
 
-- **Site Registration** — register construction sites with address, environment type, and status
-- **Daily Field Log** — record weather, observations, workers, equipment, and expenses per day
-- **Control Panel** — daily overview with total workforce, expenses, and weather alerts
-- **AI Assistant** — smart assistant focused on construction; select a specific site for precise and cost-efficient queries
+- **Site Registration** — register construction sites with address, environment (open, enclosed or mixed), status and schedule stages
+- **Stages and physical progress** — each stage has a weight and an estimated duration; the panel shows the site's progress
+- **Daily Field Log** — record weather, work location (indoor or outdoor), observations, workers, equipment, and expenses per day
+- **Budgets** — material and labor costs with profit as a markup on cost; an approved budget can become a site
+- **Control Panel** — daily overview with total workforce, expenses, and weather alerts for outdoor work
+- **AI Assistant** — assistant focused on construction; select a specific site for precise and cost-efficient queries
 - **Settings** — manage categories for job roles, equipment, and expenses
 
 ---
@@ -27,19 +29,22 @@ Managing multiple construction sites simultaneously requires tracking workers, e
 | Layer | Technology |
 |---|---|
 | Backend | FastAPI + SQLAlchemy |
-| Database | SQLite (dev) / PostgreSQL (prod) |
+| Database | SQLite (PostgreSQL is on the roadmap) |
 | Frontend | Streamlit |
 | AI | Google Gemini (`google-genai`) |
+| Tests | pytest |
 | Version Control | Git + GitHub |
 
 ---
 
 ## 🚀 Running Locally
 
+Requires Python 3.10 or newer.
+
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Jose-Felipe-N/diario-de-obras.git
-cd diario-de-obras
+git clone https://github.com/Jose-Felipe-N/diario-de-obras-app.git
+cd diario-de-obras-app
 ```
 
 ### 2. Create and activate a virtual environment
@@ -66,12 +71,13 @@ Edit `.env` and fill in your Gemini API key:
 ```
 GEMINI_API_KEY=your_key_here
 ```
+The other variables in `.env.example` are optional (Gemini model, database file, API address, and quota counter file). A variable set in the terminal takes precedence over `.env`.
 
 ### 5. Seed the database with sample data (optional)
 ```bash
 python seed.py
-python seed_etapas.py
 ```
+⚠️ The seed **drops and recreates** the database before generating sample sites, stages, logs, and budgets.
 
 ### 6. Start the backend
 ```bash
@@ -85,37 +91,79 @@ streamlit run frontend.py
 
 Access at: `http://localhost:8501`
 
+### 8. Run the tests
+```bash
+pytest
+```
+The tests use an in-memory database and a temporary quota counter: they don't change your database or call the Gemini API.
+
 ---
 
 ## 📁 Project Structure
 
 ```
-📁 diario-de-obras/
+📁 diario-de-obras-app/
 ├── main.py              # API entrypoint
-├── database.py          # Database configuration
+├── config.py            # Settings read from .env and environment variables
+├── database.py          # Database connection
 ├── models.py            # SQLAlchemy models
-├── schemas.py           # Pydantic schemas
+├── schemas.py           # Pydantic schemas (API validation)
+├── gemini.py            # Single entry point for Gemini calls
+├── cota.py              # Gemini daily quota counter
 ├── frontend.py          # Streamlit interface
-├── seed.py              # Sample construction site data
-├── seed_etapas.py       # Sample stages and logs data
+├── opcoes_tela.py       # Rules for the editable lists in the UI
+├── seed.py              # Sample data for development
 ├── requirements.txt
 ├── .env.example
-└── 📁 routers/
-    ├── obras.py
-    ├── diarios.py
-    ├── registros.py     # Workers, equipment and expenses
-    ├── dashboard.py
-    └── ia.py            # AI assistant endpoints
+├── 📁 routers/
+│   ├── obras.py
+│   ├── diarios.py
+│   ├── registros.py     # Workers, equipment and expenses
+│   ├── orcamentos.py    # Budgets
+│   ├── dashboard.py
+│   └── ia.py            # AI assistant endpoints
+├── 📁 dados/            # Shared catalog and assistant evaluation data
+├── 📁 avaliacao/        # Evaluation data validation
+├── 📁 scripts/          # Development database migrations
+├── 📁 tests/
+└── 📁 docs/
+    └── experimentos.md  # Assistant evaluation method and results (Portuguese)
 ```
 
 ---
 
 ## 🤖 AI Assistant
 
-The assistant is powered by Google Gemini and responds **only to questions related to construction and civil engineering**. To optimize API credit usage, the user selects a specific site before starting the conversation — the system fetches only that site's data when building the AI context.
+The assistant is powered by Google Gemini and responds **only to questions related to construction and civil engineering**. To optimize API usage, the user selects a specific site before starting the conversation, and the system fetches only that site's data when building the AI context.
+
+Answer quality is being measured with a question set and answer key; the method and results are in [docs/experimentos.md](docs/experimentos.md).
+
+### Gemini daily quota
+
+On the free tier, each model has a requests-per-day limit shared by the whole project, and the day ends at midnight Pacific time. Every call goes through a local counter first; when the quota runs out, the assistant says so instead of failing.
+
+```bash
+python cota.py situacao                  # today's usage
+python cota.py reservar 2026-10-14       # reserve the day for a measurement run
+python cota.py ajustar 2026-10-14 gemini-3.8-flash 12 --motivo "Playground usage"
+```
+
+The counter can't see calls made by other means in the same project (the AI Studio Playground, for example); use `ajustar` to match the AI Studio dashboard.
+
+### Data usage
+
+On the Gemini API free tier, submitted content may be used by Google to improve its products. The data in this repository is fictitious. **To use the system with a construction company's real data, use the paid tier**, where content is not used for that purpose.
+
+---
+
+## ⚠️ Known Limitations
+
+- **The API has no authentication.** Don't expose it to the internet (for example, through a tunnel such as ngrok): anyone could read the data and consume the Gemini quota.
+- **Lists edited in Settings live only in the browser session**: they are lost when the app restarts, and each browser has its own list.
+- **A daily log is saved in several requests** (the log, then each worker, equipment and expense entry); if one fails midway, the log is left incomplete.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file.
