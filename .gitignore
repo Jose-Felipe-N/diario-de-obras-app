@@ -23,3 +23,8 @@ __pycache__/
 ngrok.exe
 
 teste_ia.py
+# Índice vetorial do RAG (reconstruído a partir do banco)
+chroma/
+
+# Banco usado pela avaliação
+avaliacao/eval.db

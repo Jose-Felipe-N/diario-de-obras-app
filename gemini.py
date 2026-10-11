@@ -3,6 +3,7 @@
 from functools import lru_cache
 
 from google import genai
+from google.genai import types
 
 import config
 from cota import Contador, CotaEsgotada  # noqa: F401 (CotaEsgotada é reexportada)
@@ -22,3 +23,16 @@ def gerar(modelo, conteudo, configuracao=None, origem=None, contador=None):
     """
     (contador or Contador()).registrar(modelo, origem or config.COTA_ORIGEM)
     return cliente().models.generate_content(model=modelo, contents=conteudo, config=configuracao)
+
+
+def embutir(modelo, textos, dimensao, origem=None, contador=None):
+    """Um vetor por texto. Cada texto vai num Content próprio: uma lista de strings soltas
+    seria agregada pelo gemini-embedding-2 num único vetor."""
+    (contador or Contador()).registrar(modelo, origem or config.COTA_ORIGEM, quantidade=len(textos))
+    resposta = cliente().models.embed_content(
+        model=modelo, contents=[types.Content(parts=[types.Part(text=t)]) for t in textos],
+        config=types.EmbedContentConfig(output_dimensionality=dimensao))
+    vetores = [e.values for e in resposta.embeddings]
+    if len(vetores) != len(textos):
+        raise RuntimeError(f"{len(textos)} textos geraram {len(vetores)} vetores")
+    return vetores

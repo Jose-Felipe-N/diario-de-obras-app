@@ -4,11 +4,12 @@
 fastapi==0.135.2
 uvicorn==0.42.0
 SQLAlchemy==2.0.48
-pydantic==2.12.5
+pydantic==2.14.0
 python-dotenv==1.2.2
 
-# IA (Google Gemini)
+# IA (Google Gemini) e busca por tema nas observações (RAG)
 google-genai==2.29.0
+chromadb==1.5.9
 
 # Frontend
 streamlit==1.56.0

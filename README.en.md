@@ -31,7 +31,8 @@ Managing multiple construction sites simultaneously requires tracking workers, e
 | Backend | FastAPI + SQLAlchemy |
 | Database | SQLite (PostgreSQL is on the roadmap) |
 | Frontend | Streamlit |
-| AI | Google Gemini (`google-genai`) |
+| AI | Google Gemini (`google-genai`): function calling and schema-validated output |
+| Topic search (RAG) | `gemini-embedding-2` + ChromaDB |
 | Tests | pytest |
 | Version Control | Git + GitHub |
 
@@ -122,6 +123,7 @@ The tests use an in-memory database and a temporary quota counter: they don't ch
 │   ├── orcamentos.py    # Budgets
 │   ├── dashboard.py
 │   └── ia.py            # AI assistant endpoints
+├── 📁 analista/        # Assistant: tools (SQL), RAG and model loop
 ├── 📁 dados/            # Shared catalog and assistant evaluation data
 ├── 📁 avaliacao/        # Evaluation data validation
 ├── 📁 scripts/          # Development database migrations
@@ -135,6 +137,10 @@ The tests use an in-memory database and a temporary quota counter: they don't ch
 ## 🤖 AI Assistant
 
 The assistant is powered by Google Gemini and responds **only to questions related to construction and civil engineering**. To optimize API usage, the user selects a specific site before starting the conversation, and the system fetches only that site's data when building the AI context.
+
+The assistant doesn't receive the full logs in the prompt: it queries the data through **tools** (function calling) that run SQL on the server, such as expenses by category, logs for a period, schedule and budget. With a site selected, the server restricts every tool to it. For questions about events ("any water problem?"), a **semantic search** tool (RAG) finds similar observations, even when written with different words.
+
+**About ChromaDB:** with 142 observations, an exact in-memory search would be enough. I used ChromaDB to learn hands-on a vector database used in production (collections, metadata, filters and re-indexing); the trade-off is documented in [docs/experimentos.md](docs/experimentos.md).
 
 Answer quality is being measured with a question set and answer key; the method and results are in [docs/experimentos.md](docs/experimentos.md).
 

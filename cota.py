@@ -104,13 +104,13 @@ class Contador:
     # ── regras ────────────────────────────────────────────────────────────────
 
     @staticmethod
-    def _recusa(uso, modelo, origem, reservado):
+    def _recusa(uso, modelo, origem, reservado, quantidade=1):
         """Mensagem de recusa, ou None se a chamada pode sair."""
         if config.COTA_NIVEL == "pago":
             return None  # no nível pago não há limite diário; as chamadas só são contadas
         limite = LIMITES_DIARIOS.get(modelo, LIMITE_PADRAO)
         total = sum(uso.values())
-        if total >= limite:
+        if total + quantidade > limite:
             return f"Limite diário do assistente atingido ({total} de {limite} chamadas do {modelo} hoje)."
         if origem == AVALIACAO and uso[AVALIACAO] >= RESERVA_AVALIACAO:
             return f"A avaliação já usou as {RESERVA_AVALIACAO} chamadas do {modelo} reservadas para hoje."
@@ -119,18 +119,21 @@ class Contador:
                     f"{limite - RESERVA_AVALIACAO} chamadas do {modelo}.")
         return None
 
-    def registrar(self, modelo, origem=DESENVOLVIMENTO, agora=None):
-        """Anota uma tentativa de chamada, ou levanta CotaEsgotada sem anotar."""
+    def registrar(self, modelo, origem=DESENVOLVIMENTO, agora=None, quantidade=1):
+        """Anota uma tentativa de chamada, ou levanta CotaEsgotada sem anotar.
+
+        `quantidade` > 1 para embeddings: o Google conta cada texto do lote como uma requisição.
+        """
         if origem not in (AVALIACAO, DESENVOLVIMENTO):
             raise ValueError(f"origem inválida: {origem!r}")
         dia = dia_da_cota(agora)
         with self.trava:
             dados = self._ler()
             uso = self._uso(dados, dia, modelo)
-            recusa = self._recusa(uso, modelo, origem, modelo in dados["reservas"].get(dia, []))
+            recusa = self._recusa(uso, modelo, origem, modelo in dados["reservas"].get(dia, []), quantidade)
             if recusa:
                 raise CotaEsgotada(f"{recusa} A cota volta às {proxima_renovacao(agora)} de Brasília.")
-            uso[origem] += 1
+            uso[origem] += quantidade
             self._gravar(dados)
 
     # ── comandos ──────────────────────────────────────────────────────────────

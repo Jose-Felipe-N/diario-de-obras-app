@@ -158,3 +158,11 @@ def test_chat_do_app_respeita_a_cota(cliente, monkeypatch):
     resposta = cliente.post("/ia/chat", json=pergunta).json()["resposta"]
     assert resposta.startswith("Limite diário do assistente atingido")
     assert len(falso.chamadas) == 1
+
+
+def test_embeddings_contam_cada_texto(contador):
+    contador.registrar("gemini-embedding-2", agora=AGORA, quantidade=45)
+    contador.registrar("gemini-embedding-2", agora=AGORA, quantidade=45)
+    assert contador.situacao(DIA)["gemini-embedding-2"][DESENVOLVIMENTO] == 90
+    with pytest.raises(CotaEsgotada):
+        contador.registrar("gemini-embedding-2", agora=AGORA, quantidade=911)

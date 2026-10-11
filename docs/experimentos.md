@@ -38,6 +38,16 @@ Das 20 perguntas, 4 são **reservadas** (Q7, Q12, Q14 e Q17, uma por grupo princ
 
 O objetivo é detectar sobreajuste: se o acerto subir nas 16 perguntas visíveis e não nas 4 reservadas, a melhora provavelmente veio de ajustes feitos para o conjunto de avaliação, e não de um assistente melhor. Com só 4 perguntas, a comparação é um sinal, não uma prova estatística.
 
+## Busca por tema (RAG)
+
+Cada observação não vazia vira um documento no ChromaDB, com o texto prefixado por obra, data e clima (`title: ... | text: ...`) e metadados de obra e data para filtrar. Os vetores vêm do `gemini-embedding-2` com 768 dimensões; como esse modelo não tem `task_type`, a tarefa vai num prefixo da consulta (`task: question answering | query: ...`). Antes de cada busca, o índice é reconciliado com o banco por id e hash do texto: diários criados, editados ou apagados entram na busca sem ganchos espalhados pelo código. Se um embedding falhar, a ferramenta avisa que há diários indisponíveis, em vez de concluir que não há registro.
+
+**Por que ChromaDB.** Com 142 observações, uma busca exata em memória seria suficiente e até mais simples. O ChromaDB foi uma escolha didática, para aprender na prática um banco vetorial usado em produção (coleções, metadados, filtros e reindexação). Em escala (dezenas de milhares de documentos), a busca aproximada de um banco vetorial passa a compensar.
+
+**Limite do nível gratuito.** O limite de embeddings conta cada texto do lote como uma requisição (100 por minuto). A primeira indexação foi cortada no terceiro lote; a reconciliação deixou os textos restantes pendentes e os indexou na busca seguinte. A indexação agora respeita 90 textos por minuto.
+
+**Primeiro teste de recuperação (sem o modelo, só a busca).** Com a pergunta do engenheiro como consulta, o evento certo ficou em 1º lugar em "problema com água" (E01), "deu pau em máquina" (E13) e "o cliente pediu mudança" (E10 e E17 em 1º e 2º). Em "algum fornecedor furou", a armadilha E07 ("esquecemos de pedir o diesel", uma falha interna) ficou em 1º: a busca vetorial aproxima "faltou material" de "o fornecedor não entregou", mas não distingue a causa. Com a consulta reescrita como o modelo faria ("material não chegou, atraso na entrega do fornecedor"), E11 e E12 sobem para 2º e 3º, e a E07 continua em 1º. Cabe ao modelo descartá-la, que é exatamente o item proibido do gabarito da Q5.
+
 ## Limitações
 
 - **Dados sintéticos escritos pelo autor.** A mesma pessoa escreveu os eventos, as perguntas e as melhorias do assistente. Isso cria risco de sobreajuste ao conjunto de avaliação. As proteções adotadas: perguntas e gabarito congelados antes de mexer no assistente (tag `baseline`); melhorias por técnicas gerais (ferramentas SQL, busca por tema, saída validada), sem regras para estas obras; perguntas na voz do usuário, com paráfrases, erros de digitação e premissas erradas; um grupo que cria e apaga diários durante o teste; e o conjunto reservado.

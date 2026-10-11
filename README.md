@@ -32,7 +32,8 @@ Gerenciar múltiplas obras ao mesmo tempo envolve controlar trabalhadores, equip
 | Backend | FastAPI + SQLAlchemy |
 | Banco de dados | SQLite (PostgreSQL está no roadmap) |
 | Frontend | Streamlit |
-| IA | Google Gemini (`google-genai`) |
+| IA | Google Gemini (`google-genai`): function calling e saída validada por schema |
+| Busca por tema (RAG) | `gemini-embedding-2` + ChromaDB |
 | Testes | pytest |
 | Versionamento | Git + GitHub |
 
@@ -123,6 +124,7 @@ Os testes usam um banco em memória e um contador de cota temporário: não alte
 │   ├── orcamentos.py
 │   ├── dashboard.py
 │   └── ia.py            # Endpoints do assistente IA
+├── 📁 analista/        # Assistente: ferramentas (SQL), RAG e laço com o modelo
 ├── 📁 dados/            # Catálogo único e dados de avaliação do assistente
 ├── 📁 avaliacao/        # Validação dos dados de avaliação
 ├── 📁 scripts/          # Migrações do banco de desenvolvimento
@@ -136,6 +138,10 @@ Os testes usam um banco em memória e um contador de cota temporário: não alte
 ## 🤖 Assistente IA
 
 O assistente é alimentado pelo Google Gemini e responde **apenas perguntas relacionadas a obras e construção civil**. Para otimizar o uso da API, o usuário seleciona uma obra específica antes de iniciar a conversa, e o sistema busca apenas os dados daquela obra ao montar o contexto para a IA.
+
+O assistente não recebe os diários inteiros no prompt: ele consulta os dados por **ferramentas** (function calling) que rodam SQL no servidor, como gastos por categoria, diários de um período, cronograma e orçamento. Com uma obra selecionada, o servidor restringe todas as ferramentas a ela. Para perguntas sobre acontecimentos ("teve problema com água?"), uma ferramenta de **busca por significado** (RAG) encontra as observações parecidas, mesmo escritas com outras palavras.
+
+**Sobre o ChromaDB:** com 142 observações, uma busca exata em memória seria suficiente. Usei o ChromaDB para aprender na prática um banco vetorial usado em produção (coleções, metadados, filtros e reindexação); o trade-off está documentado em [docs/experimentos.md](docs/experimentos.md).
 
 A qualidade das respostas está sendo medida com um conjunto de perguntas e gabarito; o método e os resultados ficam em [docs/experimentos.md](docs/experimentos.md).
 

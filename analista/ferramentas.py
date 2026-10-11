@@ -4,6 +4,7 @@ O escopo da conversa é imposto aqui, não no prompt: com uma obra selecionada, 
 ferramentas ficam presas a ela, e um pedido de outra obra é recusado.
 """
 
+import logging
 import unicodedata
 from datetime import date, timedelta
 
@@ -11,6 +12,8 @@ from sqlalchemy.orm import Session
 
 import config
 import models
+
+log = logging.getLogger(__name__)
 
 MAX_DIAS_POR_CONSULTA = 31
 HORAS_DIA_PARADO = 2
@@ -38,9 +41,10 @@ def _reais(valor):
 
 
 class Ferramentas:
-    def __init__(self, db: Session, obra_id=None):
+    def __init__(self, db: Session, obra_id=None, indice=None):
         self.db = db
         self.obra_fixa = db.get(models.Obra, obra_id) if obra_id else None
+        self._indice = indice  # índice vetorial; criado só na primeira busca por tema
 
     # ── escopo ────────────────────────────────────────────────────────────────
 
@@ -142,6 +146,29 @@ class Ferramentas:
         return {"observacoes": [{"obra": d.obra.nome, "data": d.data.isoformat(), "texto": d.observacoes_gerais}
                                 for d in self._diarios(obras, inicio, fim) if (d.observacoes_gerais or "").strip()]}
 
+    def buscar_observacoes(self, consulta, obra=None, inicio=None, fim=None):
+        if not (consulta or "").strip():
+            raise ErroDeFerramenta("Informe o tema da busca em 'consulta'.")
+        obras = [self._obra(obra)] if (obra or self.obra_fixa) else self._obras_do_escopo()
+        inicio = _data(inicio, "inicio") if inicio else None
+        fim = _data(fim, "fim") if fim else None
+        if self._indice is None:
+            from analista.rag import Indice  # importa o ChromaDB só quando há busca por tema
+            self._indice = Indice(self.db)
+        try:
+            resultados, pendentes = self._indice.buscar(consulta, [o.id for o in obras], inicio, fim)
+        except Exception as e:  # ex.: limite de embeddings da API
+            log.warning("Busca por tema indisponível: %s", str(e)[:120])
+            raise ErroDeFerramenta("A busca por tema está indisponível agora. Use a ferramenta observacoes para "
+                                   "listar os textos do período e procure o tema neles.")
+        resposta = {"consulta": consulta, "resultados": resultados}
+        if pendentes:
+            datas = sorted(pendentes)
+            resposta["aviso"] = (f"{len(pendentes)} diário(s) ainda não estão disponíveis na busca por tema "
+                                 f"(datas: {', '.join(datas[-10:])}{' e outras' if len(datas) > 10 else ''}). "
+                                 "Não conclua que não há registro; consulte esses dias com a ferramenta diarios.")
+        return resposta
+
     def orcamento(self, obra=None):
         o = self._obra(obra)
         ligados = self.db.query(models.orcamento).filter(models.orcamento.obra_id == o.id).all()
@@ -225,9 +252,17 @@ DECLARACOES = [
          "obra": OBRA, "inicio": DATA, "fim": DATA,
          "categoria": {"type": "string", "description": "Ex.: Material de Construção, Mão de Obra Externa, Locação."},
          "item": {"type": "string", "description": "Ex.: Cimento, Tijolo, Aluguel de guindaste."}}}},
+    {"name": "buscar_observacoes",
+     "description": "Busca por significado nas observações escritas nos diários (RAG). Use para perguntas sobre "
+                    "acontecimentos, problemas, pedidos ou ocorrências, mesmo que o usuário use outras palavras. "
+                    "Devolve as observações mais parecidas, com obra, data e similaridade; ignore as que não "
+                    "tratam do tema perguntado.",
+     "parameters_json_schema": {"type": "object", "properties": {
+         "consulta": {"type": "string", "description": "O tema procurado, em poucas palavras."},
+         "obra": OBRA, "inicio": DATA, "fim": DATA}, "required": ["consulta"]}},
     {"name": "observacoes",
-     "description": "Textos das observações escritas nos diários (só os dias que têm texto), com obra e data. "
-                    "Use para perguntas sobre acontecimentos, problemas e pedidos.",
+     "description": "Lista todos os textos das observações de um período (só os dias que têm texto). Para "
+                    "procurar um tema, prefira buscar_observacoes.",
      "parameters_json_schema": {"type": "object", "properties": {"obra": OBRA, "inicio": DATA, "fim": DATA}}},
     {"name": "orcamento",
      "description": "Orçamento ligado a uma obra e o material lançado nos diários comparado ao material orçado.",
