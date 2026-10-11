@@ -129,6 +129,7 @@ class OrcamentoResponse(OrcamentoCreate):
     id: int
     valor_total: float
     status: StatusOrcamento
+    obra_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -143,7 +144,12 @@ class DadosConversao(BaseModel):
     data_inicio: date
 
 # ── Analista de IA ──────────────────────────────────────────────────────────────────
+class MensagemDoHistorico(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
 class ChatRequest(BaseModel):
     mensagem: str
-    historico: list = []
+    historico: List[MensagemDoHistorico] = []
     obra_id: Optional[int] = None  # Se for None, a IA analisa todas as obras. Se tiver ID, ela foca em uma só.

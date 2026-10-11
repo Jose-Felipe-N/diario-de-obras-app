@@ -1,14 +1,18 @@
+import logging
+
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+from google.genai import errors as erros_do_gemini
 from sqlalchemy.orm import Session
-import json
-from google.genai import types
-import config
+
 import gemini
-from database import get_db
 import models
 import schemas
+from analista.agente import ErroDoAssistente, responder
+from database import get_db
 
 router = APIRouter(prefix="/ia", tags=["Analista IA"])
+log = logging.getLogger(__name__)
 
 
 @router.get("/obras_disponiveis")
@@ -17,157 +21,27 @@ def listar_obras(db: Session = Depends(get_db)):
     return [{"id": o.id, "nome": o.nome} for o in obras]
 
 
+def falha(status, mensagem, codigo):
+    """Resposta de erro no mesmo formato da resposta normal, para a tela mostrar a mensagem."""
+    return JSONResponse(status_code=status,
+                        content={"resposta": mensagem, "gerar_grafico": False, "erro": codigo})
+
+
 @router.post("/chat")
 def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db)):
-    
-    if chat_req.obra_id:
-        obras = db.query(models.Obra).filter(models.Obra.id == chat_req.obra_id).all()
-    else:
-        obras = db.query(models.Obra).all()
-    orcamentos = db.query(models.orcamento).all()
-    dados_obras = []
-    dados_orcamentos = []
-    
-    for orc in orcamentos:
-        dados_orcamentos.append(
-            f"Projeto: {orc.nome_projeto} | Cliente: {orc.cliente} | "
-            f"Previsto Material: R$ {orc.custo_material:.2f} | "
-            f"Previsto Mão de Obra: R$ {orc.custo_mao_de_obra:.2f} | "
-            f"Total Orcado: R$ {orc.valor_total:.2f} | Status: {orc.status}"
-        )
-
-    for obra in obras:
-        diarios = db.query(models.DiarioDeObra).filter(models.DiarioDeObra.obra_id == obra.id).all()
-        
-        total_gasto = 0
-        hist_detalhado = []
-
-        etapas = db.query(models.EtapaObra).filter(models.EtapaObra.obra_id == obra.id).all()
-        progresso_fisico = 0.0
-        etapas_info = []
-
-
-        for etapa in etapas:
-            status_tempo = "Sem dados de início"
-            
-            if etapa.data_inicio_real:
-                data_fim_calc = etapa.data_fim_real if etapa.data_fim_real else config.hoje()
-                dias_decorridos = (data_fim_calc - etapa.data_inicio_real).days
-                
-                if dias_decorridos > (etapa.dias_estimados or 0):
-                    status_tempo = f"ATRASADA ({dias_decorridos} dias decorridos de {etapa.dias_estimados} estimados)"
-                else:
-                    status_tempo = f"NO PRAZO ({dias_decorridos} dias decorridos de {etapa.dias_estimados} estimados)"
-
-            if etapa.concluida:
-                progresso_fisico += etapa.peso_percentual
-                etapas_info.append(f"[CONCLUÍDA] {etapa.nome_etapa} | Peso: {etapa.peso_percentual}% | Prazo: {status_tempo}")
-            else:
-                etapas_info.append(f"[PENDENTE] {etapa.nome_etapa} | Peso: {etapa.peso_percentual}% | Prazo: {status_tempo}")
-
-        for diario in diarios:
-            data_str = diario.data.strftime("%d/%m/%Y") if hasattr(diario.data, 'strftime') else str(diario.data)
-            
-            info_dia = {
-                "data": data_str,
-                "clima": f"Manhã: {diario.clima_manha}, Tarde: {diario.clima_tarde}",
-                "local": diario.local_dia,
-                "obs": diario.observacoes_gerais,
-                "gastos": [],
-                "efetivo": [],
-                "equipamentos": []
-            }
-
-            gastos = db.query(models.Gasto).filter(models.Gasto.diario_id == diario.id).all()
-            for g in gastos:
-                total_gasto += g.valor
-                info_dia["gastos"].append(f"{g.item} ({g.categoria}): R$ {g.valor:.2f}")
-                
-            efetivos = db.query(models.Efetivo).filter(models.Efetivo.diario_id == diario.id).all()
-            for e in efetivos:
-                info_dia["efetivo"].append(f"{e.quantidade}x {e.funcao} ({e.horas_trabalhadas}h cada)")
-                
-            equipamentos = db.query(models.Equipamento).filter(models.Equipamento.diario_id == diario.id).all()
-            for eq in equipamentos:
-                info_dia["equipamentos"].append(f"{eq.quantidade}x {eq.nome_item} ({eq.tipo})")
-            
-            hist_detalhado.append(info_dia)
-
-        resumo_obra = f"""
-        ### OBRA: {obra.nome}
-        - Ambiente: {obra.ambiente} | Status: {obra.status} | Início: {obra.data_inicio}
-        - Endereço: {obra.endereco}
-        - Financeiro: R$ {total_gasto:.2f} acumulados em {len(diarios)} diários.
-        - PROGRESSO FÍSICO ATUAL: {progresso_fisico:.1f}%
-        - Cronograma das Etapas (Previsto x Realizado): {', '.join(etapas_info) if etapas_info else 'Nenhuma etapa registrada'}
-        - Histórico de Atividades: {json.dumps(hist_detalhado)}
-        """
-        dados_obras.append(resumo_obra)
-    
-    contexto_completo = "DADOS DE ORÇAMENTOS:\n" + "\n".join(dados_orcamentos)
-    contexto_completo += "\n\nRELATÓRIO DE EXECUÇÃO:\n" + "\n".join(dados_obras)
-    
-    data_atual = config.hoje().strftime("%d/%m/%Y")
-    
-    texto_memoria = ""
-    if chat_req.historico:
-        texto_memoria = "HISTÓRICO DA CONVERSA RECENTE:\n"
-        for msg in chat_req.historico[-4:]:
-            quem = "Chefe" if msg["role"] == "user" else "Assistente"
-            texto_memoria += f"{quem}: {msg['content']}\n"
-    
-    prompt_sistema = f"""
-    Você é um Engenheiro Assistente Sênior da construtora. Hoje é {data_atual}.
-    
-    REGRAS DE CONDUTA (GUARDRAILS):
-    1. Use os dados de Orçamentos para comparar com os Gastos Reais se solicitado.
-    2. Analise clima e observações para justificar atrasos ou produtividade.
-    3. Para gráficos, agrupe dados numericamente por categoria ou data.
-    4. FOCO RESTRITO: O seu conhecimento está estritamente limitado aos DADOS DO SISTEMA abaixo e a assuntos de engenharia civil/construção. Se o usuário perguntar qualquer coisa fora desse escopo (como programação, receitas, atualidades, piadas, etc.), VOCÊ DEVE RECUSAR a resposta. Diga educadamente algo como: "Desculpe chefe, mas como Assistente de Engenharia da construtora, meu foco é exclusivo nos dados das nossas obras e orçamentos."
-    
-    SISTEMA:
-    {contexto_completo}
-    
-    {texto_memoria}
-    
-    PERGUNTA:
-    {chat_req.mensagem}
-
-    SAÍDA JSON:
-    {{
-        "resposta": "Texto detalhado",
-        "gerar_grafico": boolean,
-        "tipo_grafico": "barras", // ESCOLHA ENTRE: "barras", "pizza" ou "linha"
-        "titulo_grafico": "Título",
-        "dados_grafico": {{"Chave": valor}}
-    }}
-    """
-
-    resposta = None
     try:
-        resposta = gemini.gerar(
-            config.GEMINI_MODEL,
-            prompt_sistema,
-            types.GenerateContentConfig(response_mime_type="application/json"),
-        )
-        dados = json.loads(resposta.text)
-        if isinstance(dados, dict):
-            dados["uso"] = medir_uso(resposta, chamadas=1)
-        return dados
+        return responder(db, chat_req.mensagem, chat_req.historico, chat_req.obra_id)
     except gemini.CotaEsgotada as e:
-        return {"resposta": str(e), "gerar_grafico": False, "uso": medir_uso(None, chamadas=0)}
-    except Exception as e:
-        return {"resposta": f"Erro técnico: {str(e)}", "gerar_grafico": False, "uso": medir_uso(resposta, chamadas=1)}
-
-
-def medir_uso(resposta, chamadas):
-    """Tokens e chamadas da pergunta, para medir o custo. A tela ignora este campo."""
-    uso = getattr(resposta, "usage_metadata", None)
-    return {
-        "modelo": config.GEMINI_MODEL,
-        "chamadas": chamadas,
-        "tokens_entrada": getattr(uso, "prompt_token_count", None),
-        "tokens_saida": getattr(uso, "candidates_token_count", None),
-        "tokens_raciocinio": getattr(uso, "thoughts_token_count", None),
-        "tokens_total": getattr(uso, "total_token_count", None),
-    }
+        return falha(429, str(e), "cota_diaria")
+    except ErroDoAssistente as e:
+        return falha(e.status, str(e), "resposta_invalida")
+    except erros_do_gemini.APIError as e:
+        log.warning("Erro da API do Gemini (%s): %s", e.code, e)
+        if e.code == 429:
+            return falha(429, "Muitas perguntas em pouco tempo. Espere um minuto e tente de novo.", "limite_da_api")
+        if e.code in (500, 503, 504):
+            return falha(503, "O assistente está sobrecarregado agora. Tente de novo em instantes.", "indisponivel")
+        return falha(502, "O assistente não conseguiu responder agora. Tente de novo.", "erro_da_api")
+    except Exception:
+        log.exception("Falha inesperada no Analista IA")
+        return falha(500, "Ocorreu um erro inesperado no assistente. Tente de novo.", "erro_interno")

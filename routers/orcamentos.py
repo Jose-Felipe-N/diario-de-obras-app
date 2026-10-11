@@ -55,7 +55,9 @@ def converter_orcamento_em_obra(orcamento_id: int, dados: schemas.DadosConversao
         ambiente=dados.ambiente
     )
     db.add(nova_obra)
-    
+    db.flush()  # gera o id da obra para ligar o orçamento
+
     orc.status = "Convertido em Obra"
+    orc.obra_id = nova_obra.id
     db.commit()
     return {"mensagem": "Obra criada com sucesso!"}

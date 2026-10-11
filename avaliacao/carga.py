@@ -48,11 +48,12 @@ def carregar_banco(engine, pasta=None):
                              for g in d["gastos"]]
             db.add(diario)
 
-        # A ligação orçamento-obra fica só no JSON até a etapa 4 (coluna obra_id).
+        db.flush()  # gera os ids das obras para ligar os orçamentos
         for o in dados.esqueleto["orcamentos"]:
             db.add(models.orcamento(cliente=o["cliente"], nome_projeto=o["nome_projeto"],
                                     custo_material=o["custo_material"], custo_mao_de_obra=o["custo_mao_de_obra"],
-                                    lucro=o["lucro"], valor_total=o["valor_total"], status=o["status"]))
+                                    lucro=o["lucro"], valor_total=o["valor_total"], status=o["status"],
+                                    obra_id=obras[o["obra"]].id if o["obra"] else None))
         db.commit()
 
     return {"obras": len(obras), "diarios": len(dados.diarios), "orcamentos": len(dados.esqueleto["orcamentos"]),

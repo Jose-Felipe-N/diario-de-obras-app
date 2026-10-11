@@ -79,6 +79,9 @@ class orcamento(Base):
 
     status = Column(String, default="Em análise")
 
+    # Obra criada a partir deste orçamento (preenchida pelo /converter).
+    obra_id = Column(Integer, ForeignKey("obras.id"), nullable=True)
+
 class EtapaObra(Base):
     __tablename__ = "etapas_obra"
 

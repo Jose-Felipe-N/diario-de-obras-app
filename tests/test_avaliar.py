@@ -8,6 +8,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from google.genai import errors
+
 import config
 import gemini
 import models
@@ -21,13 +23,14 @@ class GeminiFalso:
         self.models = SimpleNamespace(generate_content=self._gerar)
 
     def _gerar(self, model, contents, config=None):
-        self.prompts.append(contents)
+        self.prompts.append(getattr(config, "system_instruction", None) or "")
         if self.falhas_iniciais:
             self.falhas_iniciais -= 1
-            raise RuntimeError("503 UNAVAILABLE: modelo sobrecarregado")
+            raise errors.APIError(503, {"error": {"code": 503, "message": "modelo sobrecarregado"}})
         uso = SimpleNamespace(prompt_token_count=100, candidates_token_count=10,
                               thoughts_token_count=5, total_token_count=115)
-        return SimpleNamespace(text=json.dumps({"resposta": "R$ 10.841,50", "gerar_grafico": False}),
+        return SimpleNamespace(function_calls=None, candidates=[],
+                               text=json.dumps({"resposta": "R$ 10.841,50", "gerar_grafico": False}),
                                usage_metadata=uso)
 
 
@@ -74,14 +77,27 @@ def test_rodada_completa(ambiente, monkeypatch):
     assert q11["valores_encontrados"] == {"cimento": True, "compras_de_cimento": False}
 
     assert all("Hoje é 08/10/2026" in p for p in ambiente.falso.prompts)
-    assert "Betoneira parou de girar" in ambiente.falso.prompts[-1]
     assert config.DATA_REFERENCIA is None and config.COTA_ORIGEM == "desenvolvimento"
 
 
-def test_banco_volta_ao_estado_congelado_depois_da_q20(ambiente, monkeypatch):
+def test_diario_da_q20_existe_durante_a_pergunta_e_some_depois(ambiente, monkeypatch):
     monkeypatch.setattr(config, "COTA_NIVEL", "pago")
-    avaliar.rodar("teste", ambiente.pasta, ids={"Q20"}, esperar=sem_espera)
     engine = create_engine(f"sqlite:///{ambiente.banco}")
+
+    def diarios_de_hoje():
+        with sessionmaker(bind=engine)() as db:
+            return db.query(models.DiarioDeObra).filter(models.DiarioDeObra.data == date(2026, 10, 8)).count()
+
+    durante = []
+    perguntar_original = avaliar.perguntar
+
+    def espiar(*args, **kwargs):
+        durante.append(diarios_de_hoje())
+        return perguntar_original(*args, **kwargs)
+
+    monkeypatch.setattr(avaliar, "perguntar", espiar)
+    avaliar.rodar("teste", ambiente.pasta, ids={"Q20"}, esperar=sem_espera)
+    assert durante == [1]
     with sessionmaker(bind=engine)() as db:
         assert db.query(models.DiarioDeObra).filter(models.DiarioDeObra.data == date(2026, 10, 8)).count() == 0
         assert db.query(models.DiarioDeObra).count() == 189

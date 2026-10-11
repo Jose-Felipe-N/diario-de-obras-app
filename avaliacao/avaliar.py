@@ -169,8 +169,10 @@ def perguntar(cliente, pergunta, obra_ids, esperar):
         texto = corpo.get("resposta", "") if isinstance(corpo, dict) else ""
         if any(sinal in texto for sinal in SINAIS_DE_COTA_ESGOTADA):
             raise ParadaPorCota(texto)
-        temporario = texto.startswith("Erro técnico") and any(c in texto for c in ERROS_TEMPORARIOS)
-        if (temporario or resposta.status_code >= 500) and tentativas <= len(ESPERAS_APOS_ERRO):
+        # O ia.py do baseline devolve os erros do Gemini com HTTP 200 e "Erro técnico"; o novo usa 429 e 5xx.
+        temporario = (texto.startswith("Erro técnico") and any(c in texto for c in ERROS_TEMPORARIOS)) \
+            or resposta.status_code == 429 or resposta.status_code >= 500
+        if temporario and tentativas <= len(ESPERAS_APOS_ERRO):
             esperar(ESPERAS_APOS_ERRO[tentativas - 1])
             continue
         if resposta.status_code != 200 or texto.startswith("Erro técnico"):

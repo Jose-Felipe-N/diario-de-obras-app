@@ -130,7 +130,8 @@ class ClienteFalso:
 
     def _gerar(self, **kwargs):
         self.chamadas.append(kwargs)
-        return SimpleNamespace(text=json.dumps({"resposta": "ok", "gerar_grafico": False}))
+        return SimpleNamespace(function_calls=None, candidates=[], usage_metadata=None,
+                               text=json.dumps({"resposta": "ok", "gerar_grafico": False}))
 
 
 def test_gerar_anota_antes_e_nao_chama_a_api_sem_cota(monkeypatch, contador):

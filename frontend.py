@@ -671,7 +671,12 @@ elif menu_selecionado == "Analista IA":
                         
                         st.session_state["mensagens_chat"].append({"role": "assistant", "content": texto_resposta})
                     else:
-                        st.error("Ops! O Analista IA encontrou um erro no banco de dados.")
+                        # A API devolve uma mensagem amigável (cota esgotada, modelo sobrecarregado etc.).
+                        try:
+                            mensagem_erro = resposta_api.json().get("resposta")
+                        except ValueError:
+                            mensagem_erro = None
+                        st.warning(mensagem_erro or "O Analista IA não conseguiu responder agora. Tente de novo.")
                 except Exception as e:
                     st.error(f"Erro de conexão com o servidor: {e}")
 
