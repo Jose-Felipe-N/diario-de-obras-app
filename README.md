@@ -163,6 +163,24 @@ No nível gratuito da API do Gemini, o conteúdo enviado pode ser usado pelo Goo
 
 ---
 
+## 🎬 Demonstração
+
+Para ver o assistente com os dados de avaliação (3 obras, de junho a outubro de 2026) sem mexer no seu banco, use um arquivo separado e a data de referência dos dados:
+
+```bash
+# Git Bash; no PowerShell, use $env:NOME="valor" antes de cada comando
+export DIARIO_DB_PATH=demo.db DATA_REFERENCIA=2026-10-08
+python seed.py --sim
+uvicorn main:app --reload        # em outro terminal, com as mesmas variáveis:
+streamlit run frontend.py
+```
+
+Perguntas para testar no Analista IA: "teve algum problema com água aí na casa?" (Casa Condomínio), "qual obra tá atrasada?" (visão geral), "me passa uma receita de bolo" (fora do escopo).
+
+**Resultados da avaliação:** [tabela a preencher] · **Vídeo:** [link a preencher]. Detalhes em [docs/experimentos.md](docs/experimentos.md).
+
+---
+
 ## ⚠️ Limitações conhecidas
 
 - **A API não tem autenticação.** Não a exponha na internet (por exemplo, com um túnel como o ngrok): qualquer pessoa poderia ler os dados e consumir a cota do Gemini.

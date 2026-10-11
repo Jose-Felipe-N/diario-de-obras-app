@@ -162,6 +162,24 @@ On the Gemini API free tier, submitted content may be used by Google to improve 
 
 ---
 
+## 🎬 Demo
+
+To try the assistant with the evaluation data (3 sites, June to October 2026) without touching your database, use a separate file and the data's reference date:
+
+```bash
+# Git Bash; in PowerShell, use $env:NAME="value" before each command
+export DIARIO_DB_PATH=demo.db DATA_REFERENCIA=2026-10-08
+python seed.py --sim
+uvicorn main:app --reload        # in another terminal, with the same variables:
+streamlit run frontend.py
+```
+
+Questions to try in the AI Assistant: "teve algum problema com água aí na casa?" (Casa Condomínio), "qual obra tá atrasada?" (overview), "me passa uma receita de bolo" (out of scope).
+
+**Evaluation results:** [table to be filled in] · **Video:** [link to be filled in]. Details in [docs/experimentos.md](docs/experimentos.md) (Portuguese).
+
+---
+
 ## ⚠️ Known Limitations
 
 - **The API has no authentication.** Don't expose it to the internet (for example, through a tunnel such as ngrok): anyone could read the data and consume the Gemini quota.

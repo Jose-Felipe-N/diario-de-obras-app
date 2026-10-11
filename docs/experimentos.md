@@ -38,6 +38,48 @@ Das 20 perguntas, 4 são **reservadas** (Q7, Q12, Q14 e Q17, uma por grupo princ
 
 O objetivo é detectar sobreajuste: se o acerto subir nas 16 perguntas visíveis e não nas 4 reservadas, a melhora provavelmente veio de ajustes feitos para o conjunto de avaliação, e não de um assistente melhor. Com só 4 perguntas, a comparação é um sinal, não uma prova estatística.
 
+### Correção das respostas
+
+Cada resposta é lida contra o gabarito da pergunta (itens obrigatórios, aceitáveis e proibidos) e os números citados são conferidos contra os dados. Os vereditos, com justificativa, ficam em `avaliacao/resultados/<rodada>_vereditos.json`:
+
+- **acertou:** cumpre todos os itens obrigatórios, sem item proibido e sem detalhe inventado;
+- **parcial:** falta algum item obrigatório (inclusive declarar o período em perguntas com "ontem" ou "semana passada") ou há um detalhe que não está nos dados;
+- **errou:** viola um item proibido ou erra o essencial;
+- no grupo orçado contra gasto, também **admitiu** (diz que não tem o dado) e **inventou** (dá uma comparação sem base).
+
+Um detalhe inventado rebaixa a resposta para parcial mesmo quando o essencial está certo: numa avaliação focada em alucinação, um número pequeno inventado também conta. A correção foi feita pelo autor com apoio do Claude Code, não por um modelo juiz, para não gastar cota e para cada veredito poder ser conferido.
+
+## Medição
+
+| Item | Valor |
+|---|---|
+| Modelo | `gemini-3.8-flash` (antes e depois) |
+| Nível da API | gratuito (20 requisições por dia por modelo) |
+| Rodadas | 1 por fase, sem repetição |
+| Código do "antes" | tag `baseline`: todos os diários no prompt, sem ferramentas |
+| Código do "depois" | function calling com 7 ferramentas, RAG e saída validada por schema |
+| Data de referência | 08/10/2026 |
+
+**Sobrecarga do modelo.** Na madrugada de 11/10/2026, o `gemini-3.8-flash` devolveu com frequência o erro 503 ("This model is currently experiencing high demand"). As 7 primeiras perguntas do "antes" precisaram de 2 a 4 tentativas cada, e o painel do AI Studio confirmou que as tentativas que falham contam na cota diária. A latência registrada inclui as esperas entre tentativas; o script de avaliação passou a guardar o erro de cada tentativa.
+
+**Resultados preliminares.** Pelo prazo e pela cota gratuita, a primeira comparação usa um subconjunto de 10 das 20 perguntas, cobrindo todos os grupos exceto dados novos e conversa de vários turnos: Q1, Q2, Q4, Q5, Q6, Q9, Q13, Q15, Q16 e Q18. As 4 reservadas ficam fechadas até a avaliação completa.
+
+## Resultados preliminares
+
+*[A preencher com `python -m avaliacao.relatorio antes depois` depois da medição e da correção.]*
+
+| | Antes | Depois |
+|---|---|---|
+| Acertos (10 perguntas) | [ ] | [ ] |
+| Tokens por pergunta (mediana) | [ ] | [ ] |
+| Chamadas ao modelo por pergunta | 1 | [ ] |
+
+**O que melhorou:** [ ]
+
+**O que piorou ou não mudou:** [ ]
+
+**Primeiras observações do "antes"** (6 perguntas visíveis corrigidas): 2 acertos e 4 parciais. Com todos os diários no prompt, o modelo acerta o essencial com frequência, mas inventa detalhes (o número de pedreiros de um dia sem pedreiros; uma paralisação num dia de jornada normal) e não declara o período interpretado em perguntas com tempo relativo. O custo foi de 10 mil a 42 mil tokens por pergunta.
+
 ## Busca por tema (RAG)
 
 Cada observação não vazia vira um documento no ChromaDB, com o texto prefixado por obra, data e clima (`title: ... | text: ...`) e metadados de obra e data para filtrar. Os vetores vêm do `gemini-embedding-2` com 768 dimensões; como esse modelo não tem `task_type`, a tarefa vai num prefixo da consulta (`task: question answering | query: ...`). Antes de cada busca, o índice é reconciliado com o banco por id e hash do texto: diários criados, editados ou apagados entram na busca sem ganchos espalhados pelo código. Se um embedding falhar, a ferramenta avisa que há diários indisponíveis, em vez de concluir que não há registro.
