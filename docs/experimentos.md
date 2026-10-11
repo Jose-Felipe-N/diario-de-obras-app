@@ -62,6 +62,10 @@ Um detalhe inventado rebaixa a resposta para parcial mesmo quando o essencial es
 
 **Sobrecarga do modelo.** Na madrugada de 11/10/2026, o `gemini-3.8-flash` devolveu com frequência o erro 503 ("This model is currently experiencing high demand"). As 7 primeiras perguntas do "antes" precisaram de 2 a 4 tentativas cada, e o painel do AI Studio confirmou que as tentativas que falham contam na cota diária. A latência registrada inclui as esperas entre tentativas; o script de avaliação passou a guardar o erro de cada tentativa.
 
+**Busca por tema fora do ar em Q1 e Q5 do "depois".** Na primeira parte do "depois" (11/10/2026), um bug no contador de cota aplicou o teto de 18 chamadas da avaliação também ao modelo de embeddings, cujo limite real é de 1000 por dia. A indexação foi recusada depois do primeiro lote, e a ferramenta de busca devolveu "indisponível". O assistente recebeu o aviso e leu as observações por período: acertou a Q1 assim, mas na Q5 leu só o último mês e perdeu um dos eventos. O bug foi corrigido (a reserva da avaliação passou a acompanhar o limite de cada modelo) e o índice foi montado antes da segunda parte. As duas perguntas não foram repetidas, para não trocar uma medição por outra mais favorável; elas serão refeitas com a busca na avaliação completa.
+
+**Chamadas por pergunta.** O assistente com ferramentas faz em média 3 chamadas ao modelo por pergunta (pede os dados, recebe, responde), contra 1 do "antes". No nível gratuito, isso triplica o consumo da cota diária por pergunta, mesmo com menos tokens. Por isso o "depois" foi medido em dois dias (11 e 12/10/2026).
+
 **Resultados preliminares.** Pelo prazo e pela cota gratuita, a primeira comparação usa um subconjunto de 10 das 20 perguntas, cobrindo todos os grupos exceto dados novos e conversa de vários turnos: Q1, Q2, Q4, Q5, Q6, Q9, Q13, Q15, Q16 e Q18. As 4 reservadas ficam fechadas até a avaliação completa.
 
 ## Resultados preliminares

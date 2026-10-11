@@ -8,9 +8,10 @@ Toda chamada ao Gemini passa por `Contador.registrar` antes de sair. Ele anota a
 tentativa (inclusive as repetidas depois de erro) ou, se a cota acabou, levanta
 `CotaEsgotada` sem anotar nada.
 
-Dias reservados para medição: a avaliação usa até RESERVA_AVALIACAO chamadas do
-modelo e o resto (app e testes) fica com o que sobra do limite. Em dia comum, o
-resto pode usar o limite inteiro. A avaliação nunca passa de RESERVA_AVALIACAO.
+Dias reservados para medição: o app e os testes ficam com FOLGA_DESENVOLVIMENTO
+chamadas do modelo e a avaliação com o resto do limite. Em dia comum, o app pode
+usar o limite inteiro. A avaliação nunca passa de `reserva_da_avaliacao(modelo)`
+(18 no gemini-3.8-flash, 998 no gemini-embedding-2).
 
 É uma contagem local: não enxerga chamadas feitas por outros meios no mesmo projeto
 (o Playground do AI Studio, por exemplo). Quando o painel do AI Studio mostrar outro
@@ -47,7 +48,7 @@ LIMITES_DIARIOS = {
 }
 LIMITE_PADRAO = 20  # modelo fora da tabela: conservador
 MODELO_DA_MEDICAO = "gemini-3.8-flash"
-RESERVA_AVALIACAO = 18
+FOLGA_DESENVOLVIMENTO = 2  # chamadas por dia que a avaliação deixa para o app e os testes
 
 AVALIACAO = "avaliacao"
 DESENVOLVIMENTO = "desenvolvimento"
@@ -55,6 +56,10 @@ EXTERNO = "externo"  # diferença registrada por ajuste (chamadas feitas fora de
 
 INTERVALO_MINIMO = 12      # segundos: 5 requisições por minuto
 TOKENS_POR_MINUTO = 250_000
+
+
+def reserva_da_avaliacao(modelo):
+    return LIMITES_DIARIOS.get(modelo, LIMITE_PADRAO) - FOLGA_DESENVOLVIMENTO
 
 
 class CotaEsgotada(Exception):
@@ -112,11 +117,12 @@ class Contador:
         total = sum(uso.values())
         if total + quantidade > limite:
             return f"Limite diário do assistente atingido ({total} de {limite} chamadas do {modelo} hoje)."
-        if origem == AVALIACAO and uso[AVALIACAO] >= RESERVA_AVALIACAO:
-            return f"A avaliação já usou as {RESERVA_AVALIACAO} chamadas do {modelo} reservadas para hoje."
-        if origem == DESENVOLVIMENTO and reservado and uso[DESENVOLVIMENTO] >= limite - RESERVA_AVALIACAO:
+        reserva = reserva_da_avaliacao(modelo)
+        if origem == AVALIACAO and uso[AVALIACAO] + quantidade > reserva:
+            return f"A avaliação já usou as {reserva} chamadas do {modelo} reservadas para hoje."
+        if origem == DESENVOLVIMENTO and reservado and uso[DESENVOLVIMENTO] + quantidade > FOLGA_DESENVOLVIMENTO:
             return (f"Hoje é dia de medição: o uso fora da avaliação está limitado a "
-                    f"{limite - RESERVA_AVALIACAO} chamadas do {modelo}.")
+                    f"{FOLGA_DESENVOLVIMENTO} chamadas do {modelo}.")
         return None
 
     def registrar(self, modelo, origem=DESENVOLVIMENTO, agora=None, quantidade=1):
@@ -199,8 +205,8 @@ def main(argumentos=None):
     contador = Contador()
     if args.comando == "reservar":
         contador.reservar(args.dia, args.modelo)
-        print(f"{args.dia} reservado para a medição do {args.modelo}: avaliação até {RESERVA_AVALIACAO}, "
-              f"resto até {LIMITES_DIARIOS.get(args.modelo, LIMITE_PADRAO) - RESERVA_AVALIACAO}.")
+        print(f"{args.dia} reservado para a medição do {args.modelo}: avaliação até "
+              f"{reserva_da_avaliacao(args.modelo)}, resto até {FOLGA_DESENVOLVIMENTO}.")
     elif args.comando == "liberar":
         contador.liberar(args.dia, args.modelo)
         print(f"Reserva de {args.dia} para o {args.modelo} desfeita.")

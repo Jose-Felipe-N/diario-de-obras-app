@@ -18,6 +18,7 @@ PRINCIPAL="$(cd "$(dirname "$0")/.." && pwd)"
 BASELINE="$(cd "$PRINCIPAL/.." && pwd)/diario-baseline"
 PY="$PRINCIPAL/venv/Scripts/python.exe"
 RESULTADOS="$PRINCIPAL/avaliacao/resultados"
+RESULTADOS_PY="$(cygpath -m "$RESULTADOS")"  # caminho que o Python do Windows entende
 SUBCONJUNTO="Q1 Q2 Q4 Q5 Q6 Q9 Q13 Q15 Q16 Q18"
 ANTES_FALTANDO="Q9 Q13 Q15 Q16 Q18"
 export PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 GEMINI_MODEL=gemini-3.8-flash DIARIO_DB_PATH=avaliacao/eval.db
@@ -39,7 +40,7 @@ echo "== 2. Depois: pergunta-teste Q4"
 (cd "$PRINCIPAL" && "$PY" -m avaliacao.avaliar --rotulo depois --ids Q4)
 situacao=$("$PY" -c "
 import json, sys
-linhas = [json.loads(l) for l in open(r'$RESULTADOS/depois.jsonl', encoding='utf-8')] if __import__('os').path.exists(r'$RESULTADOS/depois.jsonl') else []
+linhas = [json.loads(l) for l in open(r'$RESULTADOS_PY/depois.jsonl', encoding='utf-8')] if __import__('os').path.exists(r'$RESULTADOS_PY/depois.jsonl') else []
 q4 = [l for l in linhas if l['id'] == 'Q4']
 print('sem_resposta' if not q4 else 'ok' if q4[-1]['status'] == 'ok' else f\"erro_{q4[-1]['http']}\")")
 echo "   Q4: $situacao"

@@ -63,6 +63,23 @@ def test_avaliacao_nunca_passa_de_18(contador):
         contador.registrar(MODELO, agora=AGORA)
 
 
+def test_reserva_da_avaliacao_acompanha_o_limite_do_modelo(contador):
+    # Regressão (11/10/2026): o teto de 18 valia para todo modelo e travou a indexação
+    # de embeddings (limite de 1000 por dia) depois do primeiro lote de 45 textos.
+    embedding = "gemini-embedding-2"
+    contador.reservar(DIA, embedding)
+    for _ in range(4):
+        contador.registrar(embedding, AVALIACAO, agora=AGORA, quantidade=45)
+    assert uso(contador, embedding) == (180, 0, 0)
+
+
+def test_lote_que_passaria_da_reserva_e_recusado_inteiro(contador):
+    usar(contador, 15, AVALIACAO)
+    with pytest.raises(CotaEsgotada, match="18 chamadas"):
+        contador.registrar(MODELO, AVALIACAO, agora=AGORA, quantidade=4)
+    assert uso(contador) == (15, 0, 0)
+
+
 def test_liberar_desfaz_a_reserva(contador):
     contador.reservar(DIA)
     contador.liberar(DIA)
