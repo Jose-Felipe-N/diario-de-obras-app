@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import json
-from datetime import datetime
 from google.genai import types
 import config
 import gemini
 from database import get_db
 import models
 import schemas
-from datetime import date
 
 router = APIRouter(prefix="/ia", tags=["Analista IA"])
 
@@ -53,7 +51,7 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
             status_tempo = "Sem dados de início"
             
             if etapa.data_inicio_real:
-                data_fim_calc = etapa.data_fim_real if etapa.data_fim_real else date.today()
+                data_fim_calc = etapa.data_fim_real if etapa.data_fim_real else config.hoje()
                 dias_decorridos = (data_fim_calc - etapa.data_inicio_real).days
                 
                 if dias_decorridos > (etapa.dias_estimados or 0):
@@ -109,7 +107,7 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
     contexto_completo = "DADOS DE ORÇAMENTOS:\n" + "\n".join(dados_orcamentos)
     contexto_completo += "\n\nRELATÓRIO DE EXECUÇÃO:\n" + "\n".join(dados_obras)
     
-    data_atual = datetime.now().strftime("%d/%m/%Y")
+    data_atual = config.hoje().strftime("%d/%m/%Y")
     
     texto_memoria = ""
     if chat_req.historico:
@@ -145,14 +143,31 @@ def conversar_com_ia(chat_req: schemas.ChatRequest, db: Session = Depends(get_db
     }}
     """
 
+    resposta = None
     try:
         resposta = gemini.gerar(
             config.GEMINI_MODEL,
             prompt_sistema,
             types.GenerateContentConfig(response_mime_type="application/json"),
         )
-        return json.loads(resposta.text)
+        dados = json.loads(resposta.text)
+        if isinstance(dados, dict):
+            dados["uso"] = medir_uso(resposta, chamadas=1)
+        return dados
     except gemini.CotaEsgotada as e:
-        return {"resposta": str(e), "gerar_grafico": False}
+        return {"resposta": str(e), "gerar_grafico": False, "uso": medir_uso(None, chamadas=0)}
     except Exception as e:
-        return {"resposta": f"Erro técnico: {str(e)}", "gerar_grafico": False}
+        return {"resposta": f"Erro técnico: {str(e)}", "gerar_grafico": False, "uso": medir_uso(resposta, chamadas=1)}
+
+
+def medir_uso(resposta, chamadas):
+    """Tokens e chamadas da pergunta, para medir o custo. A tela ignora este campo."""
+    uso = getattr(resposta, "usage_metadata", None)
+    return {
+        "modelo": config.GEMINI_MODEL,
+        "chamadas": chamadas,
+        "tokens_entrada": getattr(uso, "prompt_token_count", None),
+        "tokens_saida": getattr(uso, "candidates_token_count", None),
+        "tokens_raciocinio": getattr(uso, "thoughts_token_count", None),
+        "tokens_total": getattr(uso, "total_token_count", None),
+    }

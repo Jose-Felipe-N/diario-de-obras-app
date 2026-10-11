@@ -106,6 +106,8 @@ class Contador:
     @staticmethod
     def _recusa(uso, modelo, origem, reservado):
         """Mensagem de recusa, ou None se a chamada pode sair."""
+        if config.COTA_NIVEL == "pago":
+            return None  # no nível pago não há limite diário; as chamadas só são contadas
         limite = LIMITES_DIARIOS.get(modelo, LIMITE_PADRAO)
         total = sum(uso.values())
         if total >= limite:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from datetime import date
+import config
 import models
 from database import get_db
 
@@ -20,7 +20,7 @@ def exposto_ao_clima(diario):
 
 @router.get("/")
 def obter_dashboard(db: Session = Depends(get_db)):
-    hoje = date.today()
+    hoje = config.hoje()
 
     obras_ativas = db.query(models.Obra).filter(models.Obra.status == "Em andamento").count()
     obras_pausadas = db.query(models.Obra).filter(models.Obra.status == "Pausada").all()
