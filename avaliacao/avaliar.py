@@ -69,7 +69,7 @@ def hash_canonico(*caminhos):
 def commit_atual():
     try:
         sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=RAIZ, capture_output=True, text=True).stdout.strip()
-        sujo = subprocess.run(["git", "status", "--porcelain"], cwd=RAIZ, capture_output=True, text=True).stdout.strip()
+        sujo = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=RAIZ, capture_output=True, text=True).stdout.strip()
         return f"{sha}{'+alterado' if sujo else ''}"
     except OSError:
         return None
