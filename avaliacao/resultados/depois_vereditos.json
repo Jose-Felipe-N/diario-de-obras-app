@@ -1,0 +1,20 @@
+{
+  "_criterios": "acertou: cumpre todos os itens obrigatórios, sem item proibido e sem detalhe inventado. parcial: falta algum obrigatório (inclusive declarar o período em perguntas com tempo relativo) ou há detalhe que não está nos dados. errou: viola um item proibido ou erra o essencial. No grupo orcado_x_gasto também valem 'admitiu' (diz que não tem o dado) e 'inventou' (dá comparação sem base). Os números citados foram conferidos contra dados/esqueleto.json.",
+  "_nota": "Em Q1 e Q5 a busca por tema estava indisponível: um bug no contador de cota aplicou o teto de 18 chamadas da avaliação também ao modelo de embeddings (limite real de 1000 por dia). O assistente recebeu o aviso de busca indisponível e caiu para a leitura das observações por período.",
+  "Q1": {
+    "veredito": "acertou",
+    "justificativa": "27/08, retroescavadeira atingindo a tubulação da rua na vala do baldrame, concessionária acionada para o reparo e cerca de 2 h de vala parada: todos os obrigatórios, sem citar o E02 e sem custo inventado. Sem a busca por tema (indisponível), achou o evento lendo as observações por período em 2 chamadas da ferramenta."
+  },
+  "Q2": {
+    "veredito": "acertou",
+    "justificativa": "Declara o período (28/09 a 04/10), diz que não parou, que só choveu na tarde de 02/10 e que a pré-montagem foi para a área coberta. Os 9 colaboradores com 8 h conferem com o diário de 02/10 (2 soldadores, 4 montadores, 3 serventes)."
+  },
+  "Q4": {
+    "veredito": "parcial",
+    "justificativa": "Data (07/10), gerador mantendo as máquinas de solda e pré-montagem seguindo: corretos; efetivo (9), equipamentos e gastos (R$ 609,70 + R$ 316,22 = R$ 925,92) conferem exatamente. Mas lê 'caiu a energia umas 4 h' como horário ('por volta das 4h') e não como duração (cerca de 4 h), item obrigatório. Observação: a frase do diário é ambígua no português falado; a ambiguidade está nos dados, e o veredito segue o gabarito congelado."
+  },
+  "Q5": {
+    "veredito": "parcial",
+    "justificativa": "Traz o E11 com obra e data (Casa, 01/10, tijolo; pedreiros sem serviço e reposição assentada em 05/10, ambos nos diários) e o E13 como problema resolvido pela locadora (aceitável), sem citar as falhas internas E07 e E08. Falta o E12 (Galpão, 13/07, perfis): com a busca por tema indisponível, o assistente leu só as observações do último mês (08/09 a 08/10)."
+  }
+}

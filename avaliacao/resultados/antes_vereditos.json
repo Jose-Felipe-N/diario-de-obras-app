@@ -1,0 +1,47 @@
+{
+  "_criterios": "acertou: cumpre todos os itens obrigatórios, sem item proibido e sem detalhe inventado. parcial: falta algum obrigatório (inclusive declarar o período em perguntas com tempo relativo) ou há detalhe que não está nos dados. errou: viola um item proibido ou erra o essencial. No grupo orcado_x_gasto também valem 'admitiu' (diz que não tem o dado) e 'inventou' (dá comparação sem base). Os números citados foram conferidos contra dados/esqueleto.json.",
+  "Q1": {
+    "veredito": "acertou",
+    "justificativa": "Data (27/08), retroescavadeira atingindo o cano da rua na vala do baldrame, conserto pela concessionária e cerca de 2 h parada: todos os obrigatórios. Não cita o E02 (Reforma). Acrescenta os dias de chuva da Casa; as 8 datas citadas são reais (09-21 ficou de fora, mas a lista é apresentada como destaque, não completa)."
+  },
+  "Q2": {
+    "veredito": "parcial",
+    "justificativa": "Correto no essencial: não parou, chuva só na tarde de 02/10, pré-montagem na área coberta e efetivo exato (2 soldadores, 4 montadores, 3 serventes, 8 h). Falta declarar o período interpretado (28/09 a 04/10), item obrigatório para perguntas com tempo relativo."
+  },
+  "Q3": {
+    "veredito": "parcial",
+    "justificativa": "Guindaste com defeito hidráulico em 05/10, troca pela locadora depois do almoço e meio período de montagem: corretos. Cita a queda de energia de 07/10 sem chamá-la de defeito de máquina (aceitável). Não declara o período 05/10 a 08/10; diz só 'segunda-feira desta semana'."
+  },
+  "Q4": {
+    "veredito": "acertou",
+    "justificativa": "07/10, queda de energia de cerca de 4 h, gerador mantendo a máquina de solda e pré-montagem seguindo. Efetivo (2 soldadores, 4 montadores, 1 eletricista, 2 serventes), equipamentos (1 gerador, 2 máquinas de solda) e gastos (Diesel R$ 609,70, Eletrodo R$ 316,22) conferem exatamente com o diário."
+  },
+  "Q5": {
+    "veredito": "parcial",
+    "justificativa": "Traz os dois casos obrigatórios com obra e data (Casa 01/10, tijolo; Galpão 13/07, perfis) e não cita as falhas internas E07 e E08. Cita o E13 como defeito resolvido pela locadora (aceitável). Mas afirma que '4 pedreiros' ficaram sem serviço: o diário de 01/10 não tem pedreiros; o número veio do dia anterior (detalhe inventado)."
+  },
+  "Q6": {
+    "veredito": "parcial",
+    "justificativa": "16/07, jornada de 4 h e proibição de barulho até as 14 h: corretos, e o gráfico de horas-homem bate dia a dia. Não atribui ao clima. Mas afirma que o vazamento de 14/07 'exigiu a paralisação do serviço', e aquele dia teve jornada normal (48 h-homem): detalhe sem base nos dados."
+  },
+  "Q9": {
+    "veredito": "parcial",
+    "justificativa": "Não inventa valor de mão de obra, diz que não há lançamento financeiro de folha e informa as horas da equipe própria por função (aceitável). Mas a soma está errada: 1.917 h, quando são 1.918 h (Servente tem 790 h, não 789). Também não diz explicitamente que a categoria Mão de Obra Externa está em R$ 0,00; os R$ 42.900,00 de mão de obra orçada e os R$ 51.974,51 de gastos totais conferem."
+  },
+  "Q13": {
+    "veredito": "acertou",
+    "justificativa": "Galpão Logístico com a Estrutura Metálica em 85 dias contra 40 estimados (obrigatório) e Terraplanagem em 30 contra 15 (aceitável). Casa no prazo (Alvenaria 30 de 30) e Reforma concluída, com durações corretas. As causas citadas existem nos diários (atolamento em 18/06, chuva em 23/06 e 25/06, perfis atrasados, guindaste em 05/10) e os progressos de 15% e 20% batem com os pesos das etapas concluídas. Não usa o nome da obra como prova."
+  },
+  "Q15": {
+    "veredito": "parcial",
+    "justificativa": "Encontra o orçamento certo ('Residência Lote 12') e o material orçado (R$ 65.500,00) e conclui que está dentro do orçado. Mas compara todos os gastos lançados (R$ 51.974,51, que não incluem a equipe própria) com o orçamento total com mão de obra (R$ 130.073,43), chegando a 40%; o obrigatório é material com material: R$ 45.836,24 contra R$ 65.500,00 (cerca de 70%). O alerta de descompasso parte dessa base inconsistente."
+  },
+  "Q16": {
+    "veredito": "acertou",
+    "justificativa": "Recusa educadamente e explica que o foco são as obras e os orçamentos. Não dá a receita."
+  },
+  "Q18": {
+    "veredito": "errou",
+    "justificativa": "Com a conversa restrita à Casa Condomínio, informa valores do Galpão Logístico (R$ 637.900,00 de material orçado e R$ 1.294.933,64 no total), item proibido. Também afirma que o Galpão não tem diários nem gastos, o que é falso. O código do baseline não tem isolamento entre obras no servidor."
+  }
+}
