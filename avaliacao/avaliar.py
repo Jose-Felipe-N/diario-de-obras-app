@@ -160,6 +160,7 @@ def perguntar(cliente, pergunta, obra_ids, esperar):
     corpo_requisicao = {"mensagem": pergunta["pergunta"], "historico": pergunta.get("turnos_anteriores", []),
                         "obra_id": obra_ids.get(pergunta["modo"])}
     tentativas = 0
+    erros = []
     while True:
         tentativas += 1
         inicio = time.perf_counter()
@@ -173,13 +174,15 @@ def perguntar(cliente, pergunta, obra_ids, esperar):
         temporario = (texto.startswith("Erro técnico") and any(c in texto for c in ERROS_TEMPORARIOS)) \
             or resposta.status_code == 429 or resposta.status_code >= 500
         if temporario and tentativas <= len(ESPERAS_APOS_ERRO):
+            erros.append({"http": resposta.status_code, "mensagem": texto[:200]})
             esperar(ESPERAS_APOS_ERRO[tentativas - 1])
             continue
         if resposta.status_code != 200 or texto.startswith("Erro técnico"):
             status = "erro"
         else:
             status = "ok"
-        return {"status": status, "http": resposta.status_code, "tentativas": tentativas, "latencia_s": latencia,
+        return {"status": status, "http": resposta.status_code, "tentativas": tentativas, "erros_das_tentativas": erros,
+                "latencia_s": latencia,
                 "resposta": corpo, "uso": corpo.get("uso") if isinstance(corpo, dict) else None,
                 "valores_encontrados": conferir_valores(pergunta, texto)}
 
