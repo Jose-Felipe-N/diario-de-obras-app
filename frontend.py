@@ -61,6 +61,16 @@ ROTULO_LOCAL = {
 }
 
 
+OPCOES_QUANTIDADE = list(range(1, 21))
+OPCOES_HORAS = [h / 2 for h in range(2, 25)]  # 1 h a 12 h, de meia em meia hora
+OPCOES_QUANTIDADE_EQUIP = list(range(1, 11))
+
+
+def horas_fmt(horas):
+    """8.0 -> '8 h'; 1.5 -> '1,5 h'."""
+    return f"{horas:g} h".replace(".", ",")
+
+
 def reais(valor):
     """Formata no padrão brasileiro: 1234.5 -> 'R$ 1.234,50'."""
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -208,7 +218,7 @@ elif menu_selecionado == "Painel de Obras":
 
     if st.button("🔄 Atualizar Relatórios"):
         st.session_state["mostrar_painel"] = True
-        st.session_state["busca_obra"] = ""
+        st.session_state["busca_obra"] = None
 
     if st.session_state["mostrar_painel"]:
         try:
@@ -218,9 +228,10 @@ elif menu_selecionado == "Painel de Obras":
                 st.divider()
 
                 nomes_obras = [obra['nome'] for obra in dados]
-                obra_selecionada = st.selectbox("🔍 Buscar ou selecionar obra:", [""] + nomes_obras, key="busca_obra")
+                obra_selecionada = st.selectbox("🔍 Obra", nomes_obras, index=None, key="busca_obra",
+                                                placeholder="Escolha uma obra para ver os diários…")
 
-                if obra_selecionada != "":
+                if obra_selecionada:
                     obras_filtradas = [obra for obra in dados if obra['nome'] == obra_selecionada]
 
                     for obra in obras_filtradas:
@@ -376,8 +387,6 @@ elif menu_selecionado == "Painel de Obras":
                                             st.caption("Nenhum registrado.")
 
                         st.divider()
-                else:
-                    st.info("👆 Selecione uma obra para visualizar, editar ou excluir.")
             else:
                 st.error("Erro ao buscar dados.")
         except Exception as e:
@@ -543,13 +552,18 @@ elif menu_selecionado == "Novo Diário":
                 observacoes = st.text_area("Observações Gerais")
 
                 st.markdown("### 👷 Trabalhadores (Efetivo)")
+                # Listas em vez de digitação: mais rápido de preencher e evita a caixa de edição
+                # numérica do Streamlit, que fica fora do lugar quando a página rola.
+                # Horas a partir de 1 h para registrar dias parados (chuva forte costuma dar 2 h).
                 tabela_trabalhadores = st.data_editor(
-                    [{"funcao": st.session_state["cat_efetivo"][0], "quantidade": 1, "horas_trabalhadas": 8}],
+                    [{"funcao": st.session_state["cat_efetivo"][0], "quantidade": 1, "horas_trabalhadas": 8.0}],
                     num_rows="dynamic", hide_index=True, key="ed_trab",
                     column_config={
                         "funcao": st.column_config.SelectboxColumn("Função", options=st.session_state["cat_efetivo"], required=True),
-                        "quantidade": st.column_config.NumberColumn("Quantidade", min_value=1, required=True),
-                        "horas_trabalhadas": st.column_config.NumberColumn("Horas Trabalhadas", min_value=0.5, step=0.5, required=True),
+                        "quantidade": st.column_config.SelectboxColumn(
+                            "Quantidade", options=OPCOES_QUANTIDADE, default=1, required=True),
+                        "horas_trabalhadas": st.column_config.SelectboxColumn(
+                            "Horas Trabalhadas", options=OPCOES_HORAS, default=8.0, required=True, format_func=horas_fmt),
                     }
                 )
 
@@ -560,7 +574,8 @@ elif menu_selecionado == "Novo Diário":
                     num_rows="dynamic", hide_index=True, key="ed_equip",
                     column_config={
                         "nome_item": st.column_config.SelectboxColumn("Equipamento", options=opcoes_equip, required=True),
-                        "quantidade": st.column_config.NumberColumn("Quantidade", min_value=1, required=True),
+                        "quantidade": st.column_config.SelectboxColumn(
+                            "Quantidade", options=OPCOES_QUANTIDADE_EQUIP, default=1, required=True),
                     }
                 )
 
@@ -857,13 +872,15 @@ elif menu_selecionado == "Orçamentos":
         if not orcamentos:
             st.info("Nenhum orçamento cadastrado ainda.")
         else:
-            opcoes_busca = [""] + [f"{orc['cliente']} - {orc['nome_projeto']}" for orc in orcamentos]
-            
-            orcamento_selecionado = st.selectbox("🔍 Buscar ou selecionar orçamento:", opcoes_busca, key="busca_orcamentos")
+            opcoes_busca = [f"{orc['cliente']} - {orc['nome_projeto']}" for orc in orcamentos]
+
+            # Sem seleção, a lista mostra todos; o "×" da caixa limpa a busca.
+            orcamento_selecionado = st.selectbox("🔍 Orçamento", opcoes_busca, index=None, key="busca_orcamentos",
+                                                 placeholder="Todos os orçamentos — digite para buscar…")
             
             st.markdown("<br>", unsafe_allow_html=True) 
 
-            if orcamento_selecionado != "":
+            if orcamento_selecionado:
                 orcamentos = [
                     orc for orc in orcamentos 
                     if f"{orc['cliente']} - {orc['nome_projeto']}" == orcamento_selecionado
