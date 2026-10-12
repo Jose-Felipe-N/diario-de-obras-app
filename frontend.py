@@ -9,6 +9,7 @@ import pandas as pd
 import plotly.express as px
 
 from config import API_URL
+from confirmacoes import data_br, nome_confere, resumo_exclusao_diario, resumo_exclusao_obra
 from opcoes_tela import adicionar_opcao, remover_opcao
 
 st.set_page_config(page_title="Diário de Obras", layout="wide", initial_sidebar_state="expanded")
@@ -80,6 +81,42 @@ def scroll_to_diario():
             }, 250);
         </script>
     """, height=0)
+
+def _excluir(url, aviso):
+    """Chama o DELETE da API; se der certo, guarda o aviso para mostrar depois do recarregamento."""
+    try:
+        resposta = requests.delete(url)
+    except requests.RequestException:
+        st.error("Sem conexão com o servidor. Nada foi excluído.")
+        return
+    if resposta.status_code == 200:
+        st.session_state["aviso_painel"] = aviso
+        st.rerun()
+    else:
+        st.error(f"A exclusão falhou (erro {resposta.status_code}). Nada foi excluído.")
+
+
+@st.dialog("Excluir obra")
+def confirmar_exclusao_obra(obra):
+    st.warning(resumo_exclusao_obra(obra))
+    digitado = st.text_input(f"Para confirmar, digite o nome da obra ({obra['nome']}) e tecle Enter:")
+    col_cancelar, col_excluir = st.columns(2)
+    if col_cancelar.button("Cancelar", use_container_width=True):
+        st.rerun()
+    if col_excluir.button("Excluir obra", type="primary", use_container_width=True,
+                          disabled=not nome_confere(digitado, obra["nome"])):
+        _excluir(f"{API_URL}/obras/{obra['id']}", f"Obra '{obra['nome']}' excluída.")
+
+
+@st.dialog("Excluir diário")
+def confirmar_exclusao_diario(diario, obra_nome):
+    st.warning(resumo_exclusao_diario(diario, obra_nome))
+    col_cancelar, col_excluir = st.columns(2)
+    if col_cancelar.button("Cancelar", use_container_width=True):
+        st.rerun()
+    if col_excluir.button("Excluir diário", type="primary", use_container_width=True):
+        _excluir(f"{API_URL}/diarios/{diario['id']}", f"Diário de {data_br(diario['data'])} excluído.")
+
 
 def mini_card(label, value, detalhe="", cor="#005C99"):
     """Card compacto em HTML — bem menor que st.metric."""
@@ -165,6 +202,9 @@ if menu_selecionado == "Início":
 elif menu_selecionado == "Painel de Obras":
     st.title("📊 Painel de Obras")
     st.write("Visão geral dos relatórios e andamento do canteiro.")
+    aviso = st.session_state.pop("aviso_painel", None)
+    if aviso:
+        st.success(aviso)
 
     if st.button("🔄 Atualizar Relatórios"):
         st.session_state["mostrar_painel"] = True
@@ -189,10 +229,7 @@ elif menu_selecionado == "Painel de Obras":
                             st.subheader(f"🏢 Obra: {obra['nome']}")
                         with col_del:
                             if st.button("🗑️ Excluir Obra", key=f"del_obra_{obra['id']}"):
-                                resp_del = requests.delete(f"{API_URL}/obras/{obra['id']}")
-                                if resp_del.status_code == 200:
-                                    st.success("Obra removida!")
-                                    st.rerun()
+                                confirmar_exclusao_obra(obra)
 
                         st.write(f"**Endereço:** {obra['endereco']}")
                         st.write(f"**Ambiente:** {ROTULO_AMBIENTE.get(obra.get('ambiente'), 'Não informado')}")
@@ -293,9 +330,7 @@ elif menu_selecionado == "Painel de Obras":
                                             st.rerun()
                                     with col_e2:
                                         if st.button("🗑️ Excluir", key=f"del_dia_{diario['id']}", use_container_width=True, type="primary"):
-                                            requests.delete(f"{API_URL}/diarios/{diario['id']}")
-                                            st.success("Diário removido!")
-                                            st.rerun()
+                                            confirmar_exclusao_diario(diario, obra['nome'])
 
 
                                 col_trab, col_equip, col_gastos = st.columns(3)
