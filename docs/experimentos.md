@@ -100,6 +100,17 @@ Pergunta a pergunta: Q1 acertou → acertou; Q2 parcial → acertou; Q4 acertou 
 
 **Ainda não medido:** as 4 perguntas reservadas, o grupo de dados novos, a conversa de vários turnos e Q1 e Q5 com a busca funcionando. Com 10 perguntas e 1 rodada, a diferença de 4 para 8 é um sinal forte, mas não uma prova estatística.
 
+### O papel do RAG nesta medição
+
+A comparação é entre o assistente antigo e o novo **inteiro** (ferramentas SQL, isolamento, saída validada e busca por tema juntos). Ela não separa quanto do ganho veio de cada peça; para isso seria preciso uma ablação (o assistente novo com e sem a busca, nas mesmas perguntas). O que dá para afirmar sobre o RAG:
+
+- **A maior parte do ganho não veio do RAG.** Das 4 perguntas que passaram a acertar, 3 não usaram a busca: Q9 e Q15 (números vindos do SQL) e Q18 (isolamento no servidor). A Q2 também não usou.
+- **Q6: o RAG ajudou a achar o período.** O assistente buscou "demolição rendimento atraso" na Reforma; a busca devolveu as observações da demolição (11/07 a 18/07), entre elas a do barulho proibido (16/07). Em seguida ele pediu os diários desse período à ferramenta SQL e tirou de lá a jornada de 4 h. Busca para localizar, SQL para os números: é a divisão de trabalho pretendida.
+- **Q1 e Q5: o RAG estava fora do ar** (bug do contador). Sem ele, o assistente leu as observações por período: achou o evento de agosto na Q1, mas na Q5 leu só o último mês e perdeu o evento de julho.
+- **Q5, só a busca, refeita depois com o índice funcionando** (sem o modelo; não substitui a resposta medida): com a mesma consulta que o assistente usou, os dois eventos exigidos pelo gabarito aparecem em 2º (Casa, 01/10, tijolo) e 3º (Galpão, 13/07, perfis). Em 1º vem a armadilha (diesel esquecido, falha interna) e em 5º outra falha interna (conta errada do cimento). Ou seja, a busca entrega o evento que faltou, mas cabe ao modelo descartar as falhas internas. Se ele faz isso, só uma nova medição mostra.
+
+**Resumo:** o ganho medido (4 → 8) se explica principalmente pelas ferramentas SQL e pelo isolamento. O RAG mostrou valor na Q6 e, pela busca isolada, provavelmente resolveria a falta da Q5, mas isso ainda não foi medido de ponta a ponta. A avaliação completa vai incluir a ablação com e sem a busca.
+
 **Primeiras observações do "antes"** (6 perguntas visíveis corrigidas): 2 acertos e 4 parciais. Com todos os diários no prompt, o modelo acerta o essencial com frequência, mas inventa detalhes (o número de pedreiros de um dia sem pedreiros; uma paralisação num dia de jornada normal) e não declara o período interpretado em perguntas com tempo relativo. O custo foi de 10 mil a 42 mil tokens por pergunta.
 
 ## Busca por tema (RAG)
