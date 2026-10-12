@@ -10,6 +10,7 @@ Vereditos: "acertou", "parcial" ou "errou"; no grupo orcado_x_gasto, também "ad
 Uso (a partir da raiz do projeto):
 
     python -m avaliacao.relatorio antes depois
+    python -m avaliacao.relatorio antes depois --ids Q1 Q2 Q4   # só essas perguntas
 """
 
 import argparse
@@ -22,19 +23,20 @@ PASTA = Path(__file__).resolve().parent / "resultados"
 ACERTO = "acertou"
 
 
-def carregar(rotulo, pasta=PASTA):
+def carregar(rotulo, pasta=PASTA, ids=None):
     respostas = {}
     for linha in (pasta / f"{rotulo}.jsonl").read_text(encoding="utf-8").splitlines():
         if linha.strip():
             registro = json.loads(linha)
-            respostas[registro["id"]] = registro
+            if not ids or registro["id"] in ids:
+                respostas[registro["id"]] = registro
     caminho = pasta / f"{rotulo}_vereditos.json"
     vereditos = json.loads(caminho.read_text(encoding="utf-8")) if caminho.is_file() else {}
     return respostas, vereditos
 
 
-def resumo(rotulo, pasta=PASTA):
-    respostas, vereditos = carregar(rotulo, pasta)
+def resumo(rotulo, pasta=PASTA, ids=None):
+    respostas, vereditos = carregar(rotulo, pasta, ids)
     por_grupo, por_modo, por_visibilidade = defaultdict(Counter), defaultdict(Counter), defaultdict(Counter)
     for qid, r in respostas.items():
         veredito = vereditos.get(qid, {}).get("veredito", "sem veredito")
@@ -83,8 +85,9 @@ def tabela(resumos):
 def main(argumentos=None):
     parser = argparse.ArgumentParser(description="Tabelas de resultado da avaliação.")
     parser.add_argument("rotulos", nargs="+", help="rodadas a comparar, ex.: antes depois")
+    parser.add_argument("--ids", nargs="+", help="compara só essas perguntas (ex.: um subconjunto medido nas duas rodadas)")
     args = parser.parse_args(argumentos)
-    resumos = [resumo(r) for r in args.rotulos]
+    resumos = [resumo(r, ids=args.ids) for r in args.rotulos]
     for r in resumos:
         print(f"{r['rotulo']}: modelo {sorted(r['modelo'])}, dados {sorted(r['hash_dados'])}, "
               f"perguntas {sorted(r['hash_perguntas'])}, vereditos {dict(r['vereditos'])}, "

@@ -16,5 +16,29 @@
   "Q5": {
     "veredito": "parcial",
     "justificativa": "Traz o E11 com obra e data (Casa, 01/10, tijolo; pedreiros sem serviço e reposição assentada em 05/10, ambos nos diários) e o E13 como problema resolvido pela locadora (aceitável), sem citar as falhas internas E07 e E08. Falta o E12 (Galpão, 13/07, perfis): com a busca por tema indisponível, o assistente leu só as observações do último mês (08/09 a 08/10)."
+  },
+  "Q6": {
+    "veredito": "acertou",
+    "justificativa": "16/07, jornada de 4 h e proibição de barulho até as 14 h pela administração do shopping: todos os obrigatórios, sem atribuir ao clima e sem citar outras obras. Também cita o ponto de água rompido em 14/07 como imprevisto, fato que está no diário; diferente do 'antes', não afirma paralisação nesse dia (que teve jornada normal). A frase 'rendimento impactado' por esse evento é uma leitura do texto, não um número inventado."
+  },
+  "Q9": {
+    "veredito": "acertou",
+    "justificativa": "R$ 0,00 de mão de obra nos lançamentos e explicação de que a equipe própria é registrada em horas, sem custo em reais: os dois obrigatórios. Os R$ 42.900,00 de mão de obra orçada conferem. Não informa as 1.918 h (item só aceitável)."
+  },
+  "Q13": {
+    "veredito": "acertou",
+    "justificativa": "Galpão Logístico, Estrutura Metálica com 85 dias contra 40 estimados (obrigatório), e Terraplanagem com 30 contra 15 (aceitável). Demais obras em dia ou concluídas, sem usar o nome da obra como prova."
+  },
+  "Q15": {
+    "veredito": "acertou",
+    "justificativa": "Dentro do orçado, material com material: R$ 45.836,24 lançados contra R$ 65.500,00 orçados (70,0%), saldo de R$ 19.663,76 e avanço físico de 20%, todos conferidos. Não nomeia o orçamento ('Residência Lote 12'), mas o valor de material orçado só existe nesse orçamento, o que mostra que usou o certo. O alerta de risco é apresentado como possibilidade ('pode indicar'), não como fato."
+  },
+  "Q16": {
+    "veredito": "acertou",
+    "justificativa": "Recusa educadamente, explica que o foco é o acompanhamento de obras e oferece ajuda com elas (aceitável)."
+  },
+  "Q18": {
+    "veredito": "acertou",
+    "justificativa": "Não informa nenhum valor do Galpão Logístico, explica que a conversa está restrita à Casa Condomínio e sugere selecionar o Galpão na tela. O isolamento é aplicado pelo servidor nas ferramentas."
   }
 }

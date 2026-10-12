@@ -176,7 +176,18 @@ streamlit run frontend.py
 
 Questions to try in the AI Assistant: "teve algum problema com água aí na casa?" (Casa Condomínio), "qual obra tá atrasada?" (overview), "me passa uma receita de bolo" (out of scope).
 
-**Evaluation results:** [table to be filled in] · **Video:** [link to be filled in]. Details in [docs/experimentos.md](docs/experimentos.md) (Portuguese).
+### Preliminary evaluation results
+
+Same model (`gemini-3.8-flash`), same data and 10 questions chosen before the measurement, covering every group. "Before" is the `baseline` tag (all logs in the prompt); "after" is the assistant with tools and semantic search.
+
+| | Before | After |
+|---|---|---|
+| Correct answers | 4 of 10 | 8 of 10 |
+| Tokens per question (median) | ~19.8k | ~5.5k |
+| Model calls per question (mean) | 1 | 2.6 |
+| Latency (median) | 24 s | 67 s |
+
+A small set with a single run: differences of 1 or 2 questions may be model variance. Method, grading of each answer, failures and limitations in [docs/experimentos.md](docs/experimentos.md) (Portuguese).
 
 ---
 

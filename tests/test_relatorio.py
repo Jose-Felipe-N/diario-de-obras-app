@@ -25,3 +25,10 @@ def test_resumo_e_tabela(tmp_path):
     tabela = relatorio.tabela([antes, depois])
     assert "| **Acertos (total)** | 1/2 | 2/2 |" in tabela
     assert "| numeros | 0/1 | 1/1 |" in tabela and "| reservadas | 1/1 | 1/1 |" in tabela
+
+
+def test_ids_restringe_ao_subconjunto(tmp_path):
+    gravar(tmp_path, "antes", [("Q1", "numeros", "Casa", False, 10000, 1), ("Q7", "seguranca", None, True, 12000, 1)],
+           {"Q1": {"veredito": "acertou"}})
+    antes = relatorio.resumo("antes", tmp_path, ids=["Q1"])
+    assert (antes["respondidas"], antes["acertos"], antes["tokens_mediana"]) == (1, 1, 10000)

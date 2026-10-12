@@ -177,7 +177,18 @@ streamlit run frontend.py
 
 Perguntas para testar no Analista IA: "teve algum problema com água aí na casa?" (Casa Condomínio), "qual obra tá atrasada?" (visão geral), "me passa uma receita de bolo" (fora do escopo).
 
-**Resultados da avaliação:** [tabela a preencher] · **Vídeo:** [link a preencher]. Detalhes em [docs/experimentos.md](docs/experimentos.md).
+### Resultados preliminares da avaliação
+
+Mesmo modelo (`gemini-3.8-flash`), mesmos dados e 10 perguntas escolhidas antes da medição, cobrindo todos os grupos. "Antes" é a tag `baseline` (todos os diários no prompt); "depois" é o assistente com ferramentas e busca por tema.
+
+| | Antes | Depois |
+|---|---|---|
+| Respostas corretas | 4 de 10 | 8 de 10 |
+| Tokens por pergunta (mediana) | ~19,8 mil | ~5,5 mil |
+| Chamadas ao modelo por pergunta (média) | 1 | 2,6 |
+| Latência (mediana) | 24 s | 67 s |
+
+É um conjunto pequeno e com uma rodada só: diferenças de 1 ou 2 perguntas podem ser variação do modelo. Método, correção de cada resposta, falhas e limitações em [docs/experimentos.md](docs/experimentos.md).
 
 ---
 

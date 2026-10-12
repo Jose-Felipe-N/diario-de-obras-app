@@ -64,23 +64,41 @@ Um detalhe inventado rebaixa a resposta para parcial mesmo quando o essencial es
 
 **Busca por tema fora do ar em Q1 e Q5 do "depois".** Na primeira parte do "depois" (11/10/2026), um bug no contador de cota aplicou o teto de 18 chamadas da avaliação também ao modelo de embeddings, cujo limite real é de 1000 por dia. A indexação foi recusada depois do primeiro lote, e a ferramenta de busca devolveu "indisponível". O assistente recebeu o aviso e leu as observações por período: acertou a Q1 assim, mas na Q5 leu só o último mês e perdeu um dos eventos. O bug foi corrigido (a reserva da avaliação passou a acompanhar o limite de cada modelo) e o índice foi montado antes da segunda parte. As duas perguntas não foram repetidas, para não trocar uma medição por outra mais favorável; elas serão refeitas com a busca na avaliação completa.
 
-**Chamadas por pergunta.** O assistente com ferramentas faz em média 3 chamadas ao modelo por pergunta (pede os dados, recebe, responde), contra 1 do "antes". No nível gratuito, isso triplica o consumo da cota diária por pergunta, mesmo com menos tokens. Por isso o "depois" foi medido em dois dias (11 e 12/10/2026).
+**Chamadas por pergunta.** O assistente com ferramentas faz em média 2,6 chamadas ao modelo por pergunta (pede os dados, recebe, responde), contra 1 do "antes". No nível gratuito, isso quase triplica o consumo da cota diária por pergunta, mesmo com menos tokens. Por isso o "depois" foi medido em dois dias (11 e 12/10/2026).
 
 **Resultados preliminares.** Pelo prazo e pela cota gratuita, a primeira comparação usa um subconjunto de 10 das 20 perguntas, cobrindo todos os grupos exceto dados novos e conversa de vários turnos: Q1, Q2, Q4, Q5, Q6, Q9, Q13, Q15, Q16 e Q18. As 4 reservadas ficam fechadas até a avaliação completa.
 
 ## Resultados preliminares
 
-*[A preencher com `python -m avaliacao.relatorio antes depois` depois da medição e da correção.]*
+Gerado com `python -m avaliacao.relatorio antes depois --ids Q1 Q2 Q4 Q5 Q6 Q9 Q13 Q15 Q16 Q18`. O "antes" foi medido em 11/10/2026; o "depois" em 11/10 (Q4, Q1, Q2, Q5) e 12/10/2026 (as outras 6). A correção de cada resposta, com justificativa, está em `avaliacao/resultados/`.
 
 | | Antes | Depois |
 |---|---|---|
-| Acertos (10 perguntas) | [ ] | [ ] |
-| Tokens por pergunta (mediana) | [ ] | [ ] |
-| Chamadas ao modelo por pergunta | 1 | [ ] |
+| **Respostas corretas** | **4 de 10** | **8 de 10** |
+| Clima com texto (Q2, Q6) | 0 de 2 | 2 de 2 |
+| Números (Q4, Q9, Q13) | 2 de 3 | 2 de 3 |
+| Orçado contra gasto (Q15) | 0 de 1 | 1 de 1 |
+| Segurança (Q16, Q18) | 1 de 2 | 2 de 2 |
+| Texto livre (Q1, Q5) | 1 de 2 | 1 de 2 |
+| Tokens por pergunta (mediana) | 19.756 | 5.479 |
+| Chamadas ao modelo por pergunta (média) | 1 | 2,6 |
+| Latência (mediana) | 24 s | 67 s |
 
-**O que melhorou:** [ ]
+Pergunta a pergunta: Q1 acertou → acertou; Q2 parcial → acertou; Q4 acertou → parcial; Q5 parcial → parcial; Q6 parcial → acertou; Q9 parcial → acertou; Q13 acertou → acertou; Q15 parcial → acertou; Q16 acertou → acertou; Q18 errou → acertou.
 
-**O que piorou ou não mudou:** [ ]
+**O que melhorou:**
+- **Isolamento entre obras (Q18).** Com a conversa restrita à Casa, o "antes" informou os valores do Galpão; o "depois" recusou e sugeriu selecionar a obra. A regra está no servidor, não no prompt.
+- **Contas e comparações (Q9, Q15).** O "antes" somou as horas errado (1.917 em vez de 1.918) e comparou o gasto total com o orçamento total (40%). O "depois" recebeu os números prontos das ferramentas e comparou material com material (70%).
+- **Período declarado (Q2).** Em "semana passada", o "depois" disse qual período considerou (28/09 a 04/10).
+- **Menos detalhes inventados (Q6).** O "antes" afirmou uma paralisação num dia de jornada normal; o "depois" não.
+- **Custo.** A mediana de tokens por pergunta caiu cerca de 72%.
+
+**O que piorou ou não mudou:**
+- **Q4 piorou.** O diário diz "caiu a energia umas 4 h". O "antes" leu como duração (o que o gabarito pede); o "depois" leu como horário ("por volta das 4h"). A frase é ambígua, e o modelo escolheu uma leitura sem avisar. A correção planejada é uma regra geral: citar entre aspas o trecho do diário quando houver número, horário ou quantidade, e dizer quando o texto é ambíguo. Ela será medida na avaliação completa, observando também as perguntas reservadas, porque acertar a Q4 depois de corrigi-la prova pouco.
+- **Q5 continua parcial.** Com a busca por tema fora do ar (bug descrito acima), o assistente leu só o último mês e perdeu o evento de julho. O "antes" também foi parcial, por um número inventado.
+- **Mais chamadas e mais latência.** 2,6 chamadas por pergunta contra 1, e latência mediana quase 3 vezes maior. A latência das duas rodadas inclui as esperas entre tentativas após erros 503; a do "depois" inclui também a indexação de embeddings que falhou em Q1 e Q5. Menos tokens não quer dizer menos requisições: no nível gratuito, o limite que pesa é o de requisições por dia.
+
+**Ainda não medido:** as 4 perguntas reservadas, o grupo de dados novos, a conversa de vários turnos e Q1 e Q5 com a busca funcionando. Com 10 perguntas e 1 rodada, a diferença de 4 para 8 é um sinal forte, mas não uma prova estatística.
 
 **Primeiras observações do "antes"** (6 perguntas visíveis corrigidas): 2 acertos e 4 parciais. Com todos os diários no prompt, o modelo acerta o essencial com frequência, mas inventa detalhes (o número de pedreiros de um dia sem pedreiros; uma paralisação num dia de jornada normal) e não declara o período interpretado em perguntas com tempo relativo. O custo foi de 10 mil a 42 mil tokens por pergunta.
 
