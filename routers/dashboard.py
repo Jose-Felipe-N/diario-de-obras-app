@@ -51,8 +51,14 @@ def obter_dashboard(db: Session = Depends(get_db)):
                 "clima": f"Manhã: {diario.clima_manha}, Tarde: {diario.clima_tarde}"
             })
 
+    com_diario_hoje = {d.obra_id for d in diarios_hoje}
+    sem_diario_hoje = (db.query(models.Obra).filter(models.Obra.status == "Em andamento")
+                       .order_by(models.Obra.nome).all())
+
     return {
         "obras_ativas": obras_ativas,
+        # O que falta fazer hoje: obras em andamento ainda sem diário.
+        "obras_sem_diario_hoje": [{"id": o.id, "obra": o.nome} for o in sem_diario_hoje if o.id not in com_diario_hoje],
         "efetivo_hoje": int(efetivo_hoje),
         "gastos_hoje": float(gastos_hoje),
         "alertas_pausadas": [{"obra": o.nome} for o in obras_pausadas],

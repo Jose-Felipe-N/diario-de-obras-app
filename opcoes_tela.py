@@ -34,3 +34,20 @@ def remover_opcao(opcoes, nome):
     else:
         opcoes.remove(nome)
     return True
+
+
+def opcoes_com(opcoes, linhas, campo):
+    """Lista de opções de uma coluna, acrescida dos valores já presentes nas linhas.
+
+    Ao copiar um diário antigo, uma função removida da lista ou uma quantidade fora da
+    faixa continuaria na tabela sem estar entre as opções; assim ela segue válida.
+    """
+    extras = [l[campo] for l in linhas if l.get(campo) is not None and l[campo] not in opcoes]
+    resultado = list(opcoes) + list(dict.fromkeys(extras))
+    return sorted(resultado) if all(isinstance(o, (int, float)) for o in resultado) else resultado
+
+
+def ultimo_diario_antes(diarios, data_iso):
+    """O diário mais recente anterior a `data_iso` (AAAA-MM-DD), ou None."""
+    anteriores = [d for d in diarios if d["data"] < data_iso]
+    return max(anteriores, key=lambda d: (d["data"], d["id"])) if anteriores else None

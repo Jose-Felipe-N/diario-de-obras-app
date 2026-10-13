@@ -1,5 +1,7 @@
 """Textos e regras das confirmações de exclusão da tela (sem Streamlit, para poder testar)."""
 
+from formatos import data_br
+
 
 def nome_confere(digitado, nome):
     """A exclusão da obra só libera quando o usuário digita o nome dela (sem diferenciar maiúsculas)."""
@@ -23,8 +25,3 @@ def resumo_exclusao_diario(diario, obra_nome):
     valor = f"R$ {gastos:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     return (f"Isto apaga o diário de **{data_br(diario['data'])}** da obra **{obra_nome}** "
             f"({trabalhadores} trabalhador(es), {valor} em gastos). Não dá para desfazer.")
-
-
-def data_br(iso):
-    ano, mes, dia = iso[:10].split("-")
-    return f"{dia}/{mes}/{ano}"

@@ -16,6 +16,9 @@ from main import app
 def cota_isolada(tmp_path, monkeypatch):
     """Nenhum teste lê ou grava o contador de cota real."""
     monkeypatch.setattr(config, "COTA_GEMINI_ARQUIVO", tmp_path / "cota_gemini.json")
+    monkeypatch.setattr(config, "FEEDBACK_ARQUIVO", tmp_path / "feedback" / "avaliacoes.jsonl")
+    # Um DATA_REFERENCIA no .env (ex.: para gravar uma demonstração) não pode mudar o "hoje" dos testes.
+    monkeypatch.setattr(config, "DATA_REFERENCIA", None)
 
 
 @pytest.fixture

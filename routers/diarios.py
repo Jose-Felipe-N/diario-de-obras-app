@@ -26,6 +26,21 @@ def criar_diario(diario_recebido: schemas.DiarioCreate, db: Session = Depends(ge
     return novo_diario
 
 
+@router.post("/completo", response_model=schemas.DiarioResponse)
+def criar_diario_completo(dados: schemas.DiarioCompletoCreate, db: Session = Depends(get_db)):
+    """Grava a capa, a equipe, os equipamentos e os gastos numa só transação: ou tudo, ou nada."""
+    if not db.query(models.Obra).filter(models.Obra.id == dados.obra_id).first():
+        raise HTTPException(status_code=404, detail="Obra não encontrada")
+    diario = models.DiarioDeObra(**dados.model_dump(exclude={"efetivos", "equipamentos", "gastos"}))
+    diario.efetivos = [models.Efetivo(**e.model_dump()) for e in dados.efetivos]
+    diario.equipamentos = [models.Equipamento(**e.model_dump()) for e in dados.equipamentos]
+    diario.gastos = [models.Gasto(**g.model_dump()) for g in dados.gastos]
+    db.add(diario)
+    db.commit()
+    db.refresh(diario)
+    return diario
+
+
 @router.get("/", response_model=list[schemas.DiarioResponse])
 def listar_diarios(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
     return db.query(models.DiarioDeObra).offset(skip).limit(limit).all()

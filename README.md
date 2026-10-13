@@ -16,11 +16,11 @@ Gerenciar múltiplas obras ao mesmo tempo envolve controlar trabalhadores, equip
 ## ✨ Funcionalidades
 
 - **Cadastro de Obras** — registre obras com endereço, ambiente (aberto, fechado ou misto), status e etapas do cronograma
-- **Etapas e progresso físico** — cada etapa tem peso e prazo estimado; o painel mostra o progresso da obra
-- **Diário de Campo** — registre clima, local de trabalho (interior ou exterior), observações, trabalhadores, equipamentos e gastos por dia
+- **Etapas e progresso físico** — escolha as etapas do contrato (a obra inteira ou só parte dela) e a tabela se monta com pesos somando 100% e prazos sugeridos, tudo editável; o painel mostra o progresso da obra
+- **Diário de Campo** — registre clima, local de trabalho (interior ou exterior), observações, trabalhadores, equipamentos e gastos por dia; copie a equipe do diário anterior com um clique, e o diário é gravado inteiro ou nada (um erro não deixa diário pela metade nem apaga o que foi digitado)
 - **Orçamentos** — custos de material e mão de obra com lucro por markup sobre o custo; um orçamento aprovado pode virar obra
-- **Painel de Controle** — visão geral do dia com efetivo total, gastos e alertas de clima para o trabalho feito ao ar livre
-- **Analista IA** — assistente focado em obras; selecione uma obra específica para consultas precisas e econômicas
+- **Painel de Controle** — visão geral do dia com efetivo total, gastos, alertas de clima para o trabalho feito ao ar livre e as obras que ainda não têm o diário de hoje
+- **Analista IA** — assistente focado em obras; selecione uma obra específica para consultas precisas e econômicas. Cada resposta mostra o que foi consultado ("Como cheguei a essa resposta") e pode ser avaliada com 👍/👎
 - **Configurações** — gerencie as categorias de funções, equipamentos e gastos
 
 ---
@@ -114,6 +114,10 @@ Os testes usam um banco em memória e um contador de cota temporário: não alte
 ├── cota.py              # Contador da cota diária do Gemini
 ├── frontend.py          # Interface Streamlit
 ├── opcoes_tela.py       # Regras das listas editáveis da tela
+├── confirmacoes.py      # Textos das confirmações de exclusão
+├── cronograma.py        # Monta o cronograma a partir das etapas do contrato
+├── tela_analista.py     # Fontes consultadas e sugestões do Analista IA
+├── formatos.py          # Datas no formato brasileiro
 ├── seed.py              # Carrega os dados fictícios no banco
 ├── requirements.txt
 ├── .env.example
@@ -160,6 +164,8 @@ O contador não enxerga chamadas feitas por outros meios no mesmo projeto (o Pla
 ### Uso de dados
 
 No nível gratuito da API do Gemini, o conteúdo enviado pode ser usado pelo Google para melhorar os seus produtos. Os dados deste repositório são fictícios. **Para usar o sistema com dados reais de uma construtora, use o nível pago**, em que o conteúdo não é usado para esse fim.
+
+As avaliações 👍/👎 do Analista IA ficam em `feedback/avaliacoes.jsonl` (fora do git), com a pergunta, a resposta e o que foi consultado. As respostas com 👎 são candidatas a virar perguntas novas do conjunto de avaliação.
 
 ---
 

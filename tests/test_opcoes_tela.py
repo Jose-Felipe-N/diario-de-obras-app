@@ -43,3 +43,17 @@ def test_remover_inexistente_nao_altera():
     gastos = {"Cimento": "Material de Construção", "Areia": "Material de Construção"}
     assert not remover_opcao(gastos, "Brita")
     assert len(gastos) == 2
+
+
+def test_opcoes_com_inclui_valores_ja_presentes():
+    from opcoes_tela import opcoes_com
+    linhas = [{"quantidade": 25}, {"quantidade": 3}]
+    assert opcoes_com([1, 2, 3], linhas, "quantidade") == [1, 2, 3, 25]
+    assert opcoes_com(["Pedreiro"], [{"funcao": "Gesseiro"}], "funcao") == ["Pedreiro", "Gesseiro"]
+
+
+def test_ultimo_diario_antes_da_data():
+    from opcoes_tela import ultimo_diario_antes
+    diarios = [{"id": 1, "data": "2026-10-05"}, {"id": 2, "data": "2026-10-07"}, {"id": 3, "data": "2026-10-09"}]
+    assert ultimo_diario_antes(diarios, "2026-10-08")["id"] == 2
+    assert ultimo_diario_antes(diarios, "2026-10-05") is None

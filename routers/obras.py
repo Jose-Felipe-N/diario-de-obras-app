@@ -51,6 +51,9 @@ def deletar_obra(obra_id: int, db: Session = Depends(get_db)):
     obra = db.query(models.Obra).filter(models.Obra.id == obra_id).first()
     if obra is None:
         raise HTTPException(status_code=404, detail="Obra não encontrada")
+    # O orçamento que virou esta obra continua no histórico, mas sem a ligação: no SQLite um id
+    # apagado pode ser reaproveitado, e o orçamento passaria a apontar para outra obra.
+    db.query(models.orcamento).filter(models.orcamento.obra_id == obra_id).update({"obra_id": None})
     db.delete(obra)
     db.commit()
     return {"mensagem": f"A obra com ID {obra_id} foi removida com sucesso!"}

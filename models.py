@@ -14,7 +14,8 @@ class Obra(Base):
     status = Column(String, default="Em andamento")
     ambiente = Column(String, default="Aberto")
 
-    diarios = relationship("DiarioDeObra", back_populates="obra")
+    # Apagar a obra apaga os diários (e, por cascata, equipe, equipamentos e gastos).
+    diarios = relationship("DiarioDeObra", back_populates="obra", cascade="all, delete-orphan")
     etapas = relationship("EtapaObra", back_populates="obra", cascade="all, delete-orphan")
 
 class DiarioDeObra(Base):

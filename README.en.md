@@ -15,11 +15,11 @@ Managing multiple construction sites simultaneously requires tracking workers, e
 ## ✨ Features
 
 - **Site Registration** — register construction sites with address, environment (open, enclosed or mixed), status and schedule stages
-- **Stages and physical progress** — each stage has a weight and an estimated duration; the panel shows the site's progress
-- **Daily Field Log** — record weather, work location (indoor or outdoor), observations, workers, equipment, and expenses per day
+- **Stages and physical progress** — pick the stages in the contract (the whole build or just part of it) and the table fills in with weights summing to 100% and suggested durations, all editable; the panel shows the site's progress
+- **Daily Field Log** — record weather, work location (indoor or outdoor), observations, workers, equipment, and expenses per day; copy the previous day's crew in one click, and the log is saved all-or-nothing (an error never leaves a half-saved log or wipes what was typed)
 - **Budgets** — material and labor costs with profit as a markup on cost; an approved budget can become a site
-- **Control Panel** — daily overview with total workforce, expenses, and weather alerts for outdoor work
-- **AI Assistant** — assistant focused on construction; select a specific site for precise and cost-efficient queries
+- **Control Panel** — daily overview with total workforce, expenses, weather alerts for outdoor work, and the sites still missing today's log
+- **AI Assistant** — assistant focused on construction; select a specific site for precise and cost-efficient queries. Each answer shows what was looked up ("How I got this answer") and can be rated 👍/👎
 - **Settings** — manage categories for job roles, equipment, and expenses
 
 ---
@@ -113,6 +113,10 @@ The tests use an in-memory database and a temporary quota counter: they don't ch
 ├── cota.py              # Gemini daily quota counter
 ├── frontend.py          # Streamlit interface
 ├── opcoes_tela.py       # Rules for the editable lists in the UI
+├── confirmacoes.py      # Delete confirmation texts
+├── cronograma.py        # Builds the schedule from the contract stages
+├── tela_analista.py     # Sources looked up and suggestions in the AI Assistant
+├── formatos.py          # Brazilian date formats
 ├── seed.py              # Loads the sample data into the database
 ├── requirements.txt
 ├── .env.example
@@ -159,6 +163,8 @@ The counter can't see calls made by other means in the same project (the AI Stud
 ### Data usage
 
 On the Gemini API free tier, submitted content may be used by Google to improve its products. The data in this repository is fictitious. **To use the system with a construction company's real data, use the paid tier**, where content is not used for that purpose.
+
+AI Assistant 👍/👎 ratings are stored in `feedback/avaliacoes.jsonl` (not in git), with the question, the answer, and what was looked up. Answers rated 👎 are candidates for new questions in the evaluation set.
 
 ---
 

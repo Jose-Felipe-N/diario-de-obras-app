@@ -226,6 +226,14 @@ def test_erros_da_api_viram_status_e_mensagem(api, sessao, monkeypatch, codigo, 
     assert r.status_code == status and trecho in r.json()["resposta"] and "segredo" not in r.json()["resposta"]
 
 
+def test_modelo_sem_suporte_a_ferramentas_com_json_diz_a_causa(api, sessao, monkeypatch):
+    # Regressão (12/10/2026): com o padrão gemini-2.5-flash, toda pergunta falhava com "não conseguiu responder".
+    mensagem = "Function calling with a response mime type: 'application/json' is unsupported"
+    usar_roteiro(monkeypatch, errors.APIError(400, {"error": {"code": 400, "message": mensagem}}))
+    r = perguntar(api, sessao, "?", "Casa Condomínio")
+    assert r.status_code == 500 and "GEMINI_MODEL" in r.json()["resposta"]
+
+
 def test_erro_inesperado_nao_expoe_detalhes(api, sessao, monkeypatch):
     usar_roteiro(monkeypatch, RuntimeError("senha=123"))
     r = perguntar(api, sessao, "?", "Casa Condomínio")

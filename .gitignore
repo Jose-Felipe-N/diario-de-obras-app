@@ -28,3 +28,6 @@ chroma/
 
 # Banco usado pela avaliação
 avaliacao/eval.db
+
+# Avaliações 👍/👎 do Analista IA (podem conter perguntas reais)
+feedback/

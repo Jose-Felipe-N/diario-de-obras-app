@@ -91,6 +91,32 @@ class GastoResponse(GastoCreate):
         from_attributes = True
 
 
+# ── Diário completo (capa e itens numa só requisição) ──────────────────────────
+
+class EfetivoItem(BaseModel):
+    funcao: str
+    quantidade: int
+    horas_trabalhadas: float
+
+
+class EquipamentoItem(BaseModel):
+    nome_item: str
+    tipo: str
+    quantidade: int
+
+
+class GastoItem(BaseModel):
+    item: str
+    categoria: str
+    valor: float
+
+
+class DiarioCompletoCreate(DiarioCreate):
+    efetivos: list[EfetivoItem] = []
+    equipamentos: list[EquipamentoItem] = []
+    gastos: list[GastoItem] = []
+
+
 # ── Responses compostos ────────────────────────────────────────────────────────
 
 class DiarioResponse(DiarioCreate):
@@ -153,3 +179,11 @@ class ChatRequest(BaseModel):
     mensagem: str
     historico: List[MensagemDoHistorico] = []
     obra_id: Optional[int] = None  # Se for None, a IA analisa todas as obras. Se tiver ID, ela foca em uma só.
+
+
+class FeedbackRequest(BaseModel):
+    pergunta: str
+    resposta: str
+    nota: Literal["positivo", "negativo"]
+    obra_id: Optional[int] = None
+    ferramentas: list[dict] = []
