@@ -21,7 +21,8 @@ RESULTADOS="$PRINCIPAL/avaliacao/resultados"
 RESULTADOS_PY="$(cygpath -m "$RESULTADOS")"  # caminho que o Python do Windows entende
 SUBCONJUNTO="Q1 Q2 Q4 Q5 Q6 Q9 Q13 Q15 Q16 Q18"
 ANTES_FALTANDO="Q9 Q13 Q15 Q16 Q18"
-export PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 GEMINI_MODEL=gemini-3.8-flash DIARIO_DB_PATH=avaliacao/eval.db
+# GEMINI_MODEL para o código da tag baseline; AVALIACAO_MODELO para o código atual.
+export PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 GEMINI_MODEL=gemini-3.8-flash AVALIACAO_MODELO=gemini-3.8-flash DIARIO_DB_PATH=avaliacao/eval.db
 
 if [ $# -ge 1 ]; then
     espera=$("$PY" -c "

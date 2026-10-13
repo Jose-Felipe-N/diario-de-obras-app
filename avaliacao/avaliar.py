@@ -6,7 +6,11 @@ com os dados congelados antes da rodada e depois de cada pergunta que cria dados
 
 Uso (a partir da raiz do projeto; o banco nunca pode ser o diario_obra.db):
 
-    DIARIO_DB_PATH=avaliacao/eval.db GEMINI_MODEL=gemini-3.8-flash python -m avaliacao.avaliar --rotulo antes
+    DIARIO_DB_PATH=avaliacao/eval.db python -m avaliacao.avaliar --rotulo antes
+
+O modelo é sempre o da medição (MODELO_PADRAO), mesmo que o .env do app defina GEMINI_MODEL:
+trocar o modelo no meio invalidaria a comparação com o "antes". Para medir outro modelo de
+propósito, use AVALIACAO_MODELO=...
 
 Com a chave paga (sem limite diário; contada num contador separado):
 
@@ -92,7 +96,7 @@ def configuracao_da_avaliacao(referencia):
     novos = {
         "DATA_REFERENCIA": date.fromisoformat(referencia),
         "COTA_ORIGEM": cota.AVALIACAO,
-        "GEMINI_MODEL": os.getenv("GEMINI_MODEL") or MODELO_PADRAO,
+        "GEMINI_MODEL": os.getenv("AVALIACAO_MODELO") or MODELO_PADRAO,
     }
     if chave_paga:
         novos.update(GEMINI_API_KEY=chave_paga, COTA_NIVEL="pago",

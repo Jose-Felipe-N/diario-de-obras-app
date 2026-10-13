@@ -170,7 +170,7 @@ def test_chat_do_app_respeita_a_cota(cliente, monkeypatch):
     assert cliente.post("/ia/chat", json=pergunta).json()["resposta"] == "ok"
 
     usar_ate_o_fim = Contador()
-    for _ in range(19):
+    for _ in range(cota.LIMITES_DIARIOS.get(config.GEMINI_MODEL, cota.LIMITE_PADRAO) - 1):
         usar_ate_o_fim.registrar(config.GEMINI_MODEL)
     resposta = cliente.post("/ia/chat", json=pergunta).json()["resposta"]
     assert resposta.startswith("Limite diário do assistente atingido")

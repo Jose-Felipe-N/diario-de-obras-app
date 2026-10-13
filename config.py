@@ -18,8 +18,11 @@ load_dotenv(RAIZ / ".env")
 # Chave da API do Gemini.
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Modelo usado pelo Analista IA.
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+# Modelo usado pelo Analista IA no app. Precisa ser da família Gemini 3: o assistente manda as
+# ferramentas e o schema da resposta na mesma chamada, e o Gemini 2.5 recusa essa combinação (erro 400).
+# O Flash Lite tem 500 requisições por dia no nível gratuito (o 3.8 Flash tem 20). A avaliação
+# não usa esta variável: ela mede sempre com o modelo fixo em avaliacao/avaliar.py.
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 # Arquivo SQLite. Caminho relativo é resolvido a partir da pasta do projeto,
 # para não criar um banco vazio quando o app é iniciado de outra pasta.
@@ -34,6 +37,10 @@ COTA_GEMINI_ARQUIVO = Path(os.getenv("COTA_GEMINI_ARQUIVO", Path.home() / ".diar
 
 # Pasta do índice vetorial (ChromaDB) das observações dos diários. Cada banco tem a sua coleção.
 CHROMA_DIR = RAIZ / os.getenv("CHROMA_DIR", "chroma")
+
+# Avaliações 👍/👎 das respostas do Analista IA (uma por linha, JSON). Respostas com 👎 são
+# candidatas a virar perguntas novas do conjunto de avaliação.
+FEEDBACK_ARQUIVO = RAIZ / os.getenv("FEEDBACK_ARQUIVO", "feedback/avaliacoes.jsonl")
 
 # Como as chamadas são anotadas no contador: "desenvolvimento" (padrão) ou "avaliacao".
 COTA_ORIGEM = os.getenv("COTA_ORIGEM", "desenvolvimento")

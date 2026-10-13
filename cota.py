@@ -42,6 +42,9 @@ FUSO_LOCAL = ZoneInfo("America/Sao_Paulo")
 # Limites diários do nível gratuito no projeto (conferidos no AI Studio).
 LIMITES_DIARIOS = {
     "gemini-3.8-flash": 20,
+    "gemini-3.7-flash": 20,
+    "gemini-3.5-flash-lite": 500,
+    "gemini-3.1-flash-lite": 500,
     "gemini-2.5-flash": 20,
     "gemini-embedding-2": 1000,
     "gemini-embedding-001": 1000,

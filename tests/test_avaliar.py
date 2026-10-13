@@ -38,6 +38,7 @@ class GeminiFalso:
 def ambiente(tmp_path, monkeypatch):
     monkeypatch.setenv("DIARIO_DB_PATH", str(tmp_path / "eval.db"))
     monkeypatch.delenv("GEMINI_MODEL", raising=False)
+    monkeypatch.delenv("AVALIACAO_MODELO", raising=False)
     monkeypatch.delenv("GEMINI_API_KEY_AVALIACAO", raising=False)
     falso = GeminiFalso()
     monkeypatch.setattr(gemini, "cliente", lambda: falso)
@@ -78,6 +79,16 @@ def test_rodada_completa(ambiente, monkeypatch):
 
     assert all("Hoje é 08/10/2026" in p for p in ambiente.falso.prompts)
     assert config.DATA_REFERENCIA is None and config.COTA_ORIGEM == "desenvolvimento"
+
+
+def test_modelo_do_app_no_env_nao_muda_o_modelo_da_avaliacao(ambiente, monkeypatch):
+    monkeypatch.setattr(config, "COTA_NIVEL", "pago")
+    monkeypatch.setenv("GEMINI_MODEL", "gemini-3.5-flash-lite")  # como se viesse do .env do app
+    avaliar.rodar("teste", ambiente.pasta, ids=["Q16"], esperar=sem_espera)
+    monkeypatch.setenv("AVALIACAO_MODELO", "gemini-3.7-flash")    # troca de propósito
+    avaliar.rodar("outro", ambiente.pasta, ids=["Q16"], esperar=sem_espera)
+    assert [l["modelo"] for l in linhas(ambiente.pasta)] == ["gemini-3.8-flash"]
+    assert [l["modelo"] for l in linhas(ambiente.pasta, "outro")] == ["gemini-3.7-flash"]
 
 
 def test_diario_da_q20_existe_durante_a_pergunta_e_some_depois(ambiente, monkeypatch):

@@ -46,7 +46,7 @@ def test_padroes_reproduzem_o_comportamento_anterior(tmp_path):
     if definidas:
         pytest.skip(f"o .env local define {sorted(definidas)}; os padrões não se aplicam")
     lido = ler_config(tmp_path)
-    assert lido == {"banco": str(RAIZ / "diario_obra.db"), "modelo": "gemini-2.5-flash",
+    assert lido == {"banco": str(RAIZ / "diario_obra.db"), "modelo": "gemini-3.5-flash-lite",
                     "api": "http://127.0.0.1:8000"}
 
 
